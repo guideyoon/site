@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { uploadApi, aiApi, authApi, naverApi } from '@/lib/api'
+import { uploadApi, aiApi, authApi } from '@/lib/api'
 
 interface AIWriterModalProps {
     isOpen: boolean
