@@ -106,9 +106,9 @@ services:
       dockerfile: Dockerfile
     container_name: navercafe_frontend
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://backend:8000
     depends_on:
       - backend
     volumes:
