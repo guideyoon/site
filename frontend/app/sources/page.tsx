@@ -1,0 +1,508 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { sourcesApi, authApi } from '@/lib/api'
+
+interface Source {
+    id: number
+    name: string
+    type: string
+    base_url: string
+    enabled: boolean
+    collect_interval: number
+    last_collected_at: string | null
+    crawl_policy: string | null
+}
+
+export default function SourcesPage() {
+    const router = useRouter()
+    const [sources, setSources] = useState<Source[]>([])
+    const [loading, setLoading] = useState(true)
+    const [refreshing, setRefreshing] = useState(false)
+    const [error, setError] = useState('')
+    const [notification, setNotification] = useState('')
+    const [user, setUser] = useState<any>(null)
+    const [collectingIds, setCollectingIds] = useState<Set<number>>(new Set())
+
+    // Add source form
+    const [showAddForm, setShowAddForm] = useState(false)
+    const [newSourceName, setNewSourceName] = useState('')
+    const [newSourceType, setNewSourceType] = useState('generic_board')
+    const [newSourceUrl, setNewSourceUrl] = useState('')
+    const [newSourceInterval, setNewSourceInterval] = useState(60)
+    const [newSourceConfig, setNewSourceConfig] = useState('')
+
+    // Edit source
+    const [editingSource, setEditingSource] = useState<Source | null>(null)
+
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token) {
+            router.push('/login')
+            return
+        }
+
+        const loadUser = async () => {
+            try {
+                const userRes = await authApi.me()
+                setUser(userRes.data)
+            } catch (err) {
+                console.error('Failed to load user info', err)
+            }
+        }
+        loadUser()
+        fetchSources(true)
+    }, [])
+
+    const fetchSources = async (initial = false) => {
+        // Only show global loading if we have no sources yet
+        if (initial && sources.length === 0) setLoading(true)
+        else setRefreshing(true)
+
+        try {
+            const response = await sourcesApi.list()
+            setSources(response.data)
+            setError('')
+        } catch (err: any) {
+            setError(err.response?.data?.detail || '데이터를 불러오는데 실패했습니다')
+        } finally {
+            setLoading(false)
+            setRefreshing(false)
+        }
+    }
+
+    const handleToggle = async (id: number, currentEnabled: boolean) => {
+        try {
+            await sourcesApi.toggle(id, !currentEnabled)
+            fetchSources()
+        } catch (err: any) {
+            alert(err.response?.data?.detail || '상태 변경에 실패했습니다')
+        }
+    }
+
+    const handleCollect = async (id: number, name: string) => {
+        if (!confirm(`"${name}"에서 수집을 시작하시겠습니까?`)) return
+
+        setCollectingIds(prev => new Set(prev).add(id))
+        console.log(`Starting collection for source ${id}: ${name}`)
+
+        try {
+            const resp = await sourcesApi.collect(id)
+            console.log(`Collection triggered for ${id}:`, resp.data)
+            // Call refresh immediately
+            fetchSources()
+            setNotification(`"${name}" 수집이 시작되었습니다.`)
+            setTimeout(() => setNotification(''), 3000)
+        } catch (err: any) {
+            console.error(`Collection failed for ${id}:`, err)
+            const detail = err.response?.data?.detail
+            if (err.response?.status === 503) {
+                setError(`[서비스 점검 필요] ${detail || '서버 내부 서비스(Redis)와 연결할 수 없습니다.'}`)
+            } else {
+                setError(detail || '수집 시작에 실패했습니다. 서버 상태를 확인해주세요.')
+            }
+            setTimeout(() => setError(''), 5000)
+        } finally {
+            setCollectingIds(prev => {
+                const next = new Set(prev)
+                next.delete(id)
+                return next
+            })
+        }
+    }
+
+    const handleDelete = async (id: number, name: string) => {
+        if (!confirm(`"${name}" 출처를 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return
+
+        try {
+            await sourcesApi.delete(id)
+            fetchSources()
+            alert('출처가 삭제되었습니다')
+        } catch (err: any) {
+            alert(err.response?.data?.detail || '출처 삭제에 실패했습니다')
+        }
+    }
+
+    const handleAddSource = async () => {
+        if (!newSourceName || !newSourceUrl) {
+            alert('이름과 URL은 필수입니다')
+            return
+        }
+
+        try {
+            await sourcesApi.create({
+                name: newSourceName,
+                type: newSourceType,
+                base_url: newSourceUrl,
+                collect_interval: isNaN(newSourceInterval) ? 60 : newSourceInterval,
+                crawl_policy: newSourceConfig || null
+            })
+
+            setShowAddForm(false)
+            setNewSourceName('')
+            setNewSourceType('generic_board')
+            setNewSourceUrl('')
+            setNewSourceInterval(60)
+            setNewSourceConfig('')
+            fetchSources()
+            alert('출처가 추가되었습니다')
+        } catch (err: any) {
+            alert(err.response?.data?.detail || '출처 추가에 실패했습니다')
+        }
+    }
+
+    const handleUpdateSource = async () => {
+        if (!editingSource) return
+        if (!editingSource.name || !editingSource.base_url) {
+            alert('이름과 URL은 필수입니다')
+            return
+        }
+
+        try {
+            await sourcesApi.update(editingSource.id, {
+                name: editingSource.name,
+                type: editingSource.type,
+                base_url: editingSource.base_url,
+                collect_interval: isNaN(editingSource.collect_interval) ? 60 : editingSource.collect_interval,
+                crawl_policy: editingSource.crawl_policy,
+                enabled: editingSource.enabled
+            })
+
+            setEditingSource(null)
+            fetchSources()
+            alert('출처 정보가 수정되었습니다')
+        } catch (err: any) {
+            console.error('Update error:', err)
+            alert(err.response?.data?.detail || '출처 수정에 실패했습니다')
+        }
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-100 font-sans">
+            <nav className="bg-white shadow-sm sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-16">
+                        <div className="flex">
+                            <div className="flex-shrink-0 flex items-center">
+                                <h1 className="text-xl font-bold text-blue-600">사이트 수집기</h1>
+                            </div>
+                            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                                <Link href="/dashboard" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    대시보드
+                                </Link>
+                                <Link href="/items" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    수집함
+                                </Link>
+                                <Link href="/sources" className="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    출처 관리
+                                </Link>
+                                {user?.role === 'admin' && (
+                                    <Link href="/admin" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                        관리자
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            {user && (
+                                <span className="text-sm text-gray-700 font-medium">
+                                    {user.username} 님
+                                </span>
+                            )}
+                            <button
+                                onClick={() => {
+                                    localStorage.removeItem('token')
+                                    router.push('/login')
+                                }}
+                                className="text-gray-500 hover:text-gray-700 text-sm"
+                            >
+                                로그아웃
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div className="px-4 py-6 sm:px-0">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center space-x-4">
+                            <h2 className="text-2xl font-bold text-gray-800">출처 관리</h2>
+                            {refreshing && (
+                                <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
+                            )}
+                        </div>
+                        <button
+                            onClick={() => setShowAddForm(!showAddForm)}
+                            className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition"
+                        >
+                            {showAddForm ? '취소' : '+ 출처 추가'}
+                        </button>
+                    </div>
+
+                    {/* Add Source Form */}
+                    {showAddForm && (
+                        <div className="bg-white rounded-lg shadow p-6 mb-6">
+                            <h3 className="text-lg font-semibold mb-4">새 출처 추가</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+                                    <input
+                                        type="text"
+                                        value={newSourceName}
+                                        onChange={(e) => setNewSourceName(e.target.value)}
+                                        placeholder="예: 울산시청 공지사항"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">타입</label>
+                                    <select
+                                        value={newSourceType}
+                                        onChange={(e) => setNewSourceType(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                    >
+                                        <option value="generic_board">사이트 (기관/뉴스)</option>
+                                        <option value="naver_blog">네이버 블로그</option>
+                                        <option value="rss">RSS</option>
+                                        <option value="api">API</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">기본 URL</label>
+                                    <input
+                                        type="url"
+                                        value={newSourceUrl}
+                                        onChange={(e) => setNewSourceUrl(e.target.value)}
+                                        placeholder="https://example.com"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">수집 주기 (분)</label>
+                                    <input
+                                        type="number"
+                                        value={newSourceInterval}
+                                        onChange={(e) => setNewSourceInterval(parseInt(e.target.value))}
+                                        min="1"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                    />
+                                </div>
+
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        크롤링 설정 (JSON, 선택사항)
+                                    </label>
+                                    <textarea
+                                        value={newSourceConfig}
+                                        onChange={(e) => setNewSourceConfig(e.target.value)}
+                                        rows={2}
+                                        placeholder='{"list_url": "...", "selectors": {"row": "tr", "title": "a"}}'
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-mono text-sm"
+                                    />
+                                </div>
+
+                                <button
+                                    onClick={handleAddSource}
+                                    className="md:col-span-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold"
+                                >
+                                    추가하기
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Edit Source Modal */}
+                    {editingSource && (
+                        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                            <div className="relative p-8 border w-[600px] shadow-lg rounded-md bg-white">
+                                <h3 className="text-xl font-bold mb-4">출처 정보 수정</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">이름</label>
+                                        <input
+                                            type="text"
+                                            value={editingSource.name}
+                                            onChange={(e) => setEditingSource({ ...editingSource, name: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">타입</label>
+                                            <select
+                                                value={editingSource.type}
+                                                onChange={(e) => setEditingSource({ ...editingSource, type: e.target.value })}
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                            >
+                                                <option value="generic_board">사이트 (기관/뉴스)</option>
+                                                <option value="naver_blog">네이버 블로그</option>
+                                                <option value="rss">RSS</option>
+                                                <option value="api">API</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">수집 주기 (분)</label>
+                                            <input
+                                                type="number"
+                                                value={editingSource.collect_interval}
+                                                onChange={(e) => setEditingSource({ ...editingSource, collect_interval: parseInt(e.target.value) })}
+                                                min="1"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">기본 URL</label>
+                                        <input
+                                            type="url"
+                                            value={editingSource.base_url}
+                                            onChange={(e) => setEditingSource({ ...editingSource, base_url: e.target.value })}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700">크롤링 설정 (JSON)</label>
+                                        <textarea
+                                            value={editingSource.crawl_policy || ''}
+                                            onChange={(e) => setEditingSource({ ...editingSource, crawl_policy: e.target.value })}
+                                            rows={3}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-mono text-sm"
+                                        />
+                                    </div>
+                                    <div className="flex space-x-3 pt-4">
+                                        <button
+                                            onClick={handleUpdateSource}
+                                            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 font-bold"
+                                        >
+                                            저장
+                                        </button>
+                                        <button
+                                            onClick={() => setEditingSource(null)}
+                                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-bold"
+                                        >
+                                            취소
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {notification && (
+                        <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4 animate-fade-in shadow-sm">
+                            {notification}
+                        </div>
+                    )}
+                    {error && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Sources List */}
+                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                        {loading && sources.length === 0 ? (
+                            <div className="p-8 text-center text-gray-400">출처 목록을 로딩 중...</div>
+                        ) : sources.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500">
+                                등록된 출처가 없습니다.
+                                <br />
+                                출처를 추가하여 콘텐츠 수집을 시작하세요.
+                            </div>
+                        ) : (
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">출처 정보</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">구분</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수집 주기</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {sources.map((source) => (
+                                        <tr key={source.id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm font-semibold text-gray-900">{source.name}</div>
+                                                <a href={source.base_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+                                                    {source.base_url}
+                                                </a>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${source.type === 'naver_blog' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                                    }`}>
+                                                    {source.type === 'generic_board' ? '사이트' :
+                                                        source.type === 'naver_blog' ? '블로그' : source.type}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm text-gray-900 font-medium">{source.collect_interval}분</div>
+                                                {source.last_collected_at && (
+                                                    <div className="text-xs text-gray-500">
+                                                        {new Date(source.last_collected_at).toLocaleString('ko-KR', { hour12: false, month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <button
+                                                    onClick={() => handleToggle(source.id, source.enabled)}
+                                                    className={`px-3 py-1 rounded text-xs font-bold transition ${source.enabled
+                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                        : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                                        }`}
+                                                >
+                                                    {source.enabled ? 'ON' : 'OFF'}
+                                                </button>
+                                            </td>
+                                            <td className="px-6 py-4 text-right text-sm font-medium">
+                                                <div className="flex justify-end items-center space-x-2 whitespace-nowrap">
+                                                    <button
+                                                        onClick={() => handleCollect(source.id, source.name)}
+                                                        disabled={!source.enabled || collectingIds.has(source.id)}
+                                                        className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 disabled:opacity-50 flex items-center space-x-1"
+                                                    >
+                                                        {collectingIds.has(source.id) && (
+                                                            <svg className="animate-spin h-3 w-3 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                            </svg>
+                                                        )}
+                                                        <span>{collectingIds.has(source.id) ? '요청중...' : '수집'}</span>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setEditingSource(source)}
+                                                        className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded hover:bg-indigo-100"
+                                                    >
+                                                        수정
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(source.id, source.name)}
+                                                        className="px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="mt-4 text-sm text-gray-500 flex justify-between">
+                        <span>총 {sources.length}개의 출처 관리 중</span>
+                        <span>백그라운드 체크 주기: 5분</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    )
+}

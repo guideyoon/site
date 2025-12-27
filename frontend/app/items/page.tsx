@@ -1,0 +1,500 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { itemsApi, sourcesApi, authApi } from '@/lib/api'
+
+interface Item {
+    id: number
+    title: string
+    source_id: number
+    source_name: string
+    category: string | null
+    source_type: string
+    region: string | null
+    status: string
+    published_at: string | null
+    collected_at: string
+    url: string
+    image_urls: string[] | null
+    thumbnail_url: string | null
+}
+
+interface ItemDetail extends Item {
+    source_url: string
+    raw_text: string | null
+    summary_text: string | null
+    meta_json: object | null
+}
+
+interface Source {
+    id: number
+    name: string
+}
+
+export default function ItemsPage() {
+    const router = useRouter()
+    const [items, setItems] = useState<Item[]>([])
+    const [sources, setSources] = useState<Source[]>([])
+    const [loading, setLoading] = useState(true)
+    const [refreshing, setRefreshing] = useState(false)
+    const [error, setError] = useState('')
+    const [selectedItem, setSelectedItem] = useState<ItemDetail | null>(null)
+    const [showModal, setShowModal] = useState(false)
+    const [user, setUser] = useState<any>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    // Filters
+    const [typeFilter, setTypeFilter] = useState('')
+    const [sourceFilter, setSourceFilter] = useState('')
+    const [searchQuery, setSearchQuery] = useState('')
+
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (!token) {
+            router.push('/login')
+            return
+        }
+
+        const loadUser = async () => {
+            try {
+                const userRes = await authApi.me()
+                setUser(userRes.data)
+            } catch (err) {
+                console.error('Failed to load user info', err)
+            }
+        }
+        loadUser()
+        fetchSources()
+
+        if (isInitialLoad) {
+            fetchItems(true)
+            setIsInitialLoad(false)
+        } else {
+            fetchItems(false)
+        }
+    }, [typeFilter, sourceFilter, searchQuery])
+
+    const fetchSources = async () => {
+        try {
+            const response = await sourcesApi.list()
+            setSources(response.data)
+        } catch (err) {
+            console.error('Failed to fetch sources:', err)
+        }
+    }
+
+    const fetchItems = async (initial = false) => {
+        // Only show global loading if we have no items yet
+        if (initial && items.length === 0) setLoading(true)
+        else setRefreshing(true)
+
+        try {
+            const params: any = { status: 'collected' }
+            if (typeFilter) params.type = typeFilter
+            if (sourceFilter) params.source_id = sourceFilter
+            if (searchQuery) params.q = searchQuery
+
+            const response = await itemsApi.list(params)
+            setItems(response.data)
+            setError('')
+        } catch (err: any) {
+            setError(err.response?.data?.detail || '데이터를 불러오는데 실패했습니다')
+        } finally {
+            setLoading(false)
+            setRefreshing(false)
+        }
+    }
+
+    const handleViewDetail = async (itemId: number) => {
+        try {
+            const response = await itemsApi.get(itemId)
+            setSelectedItem(response.data)
+            setShowModal(true)
+        } catch (err) {
+            console.error('Failed to fetch item detail:', err)
+        }
+    }
+
+    const handleDeleteItem = async (id: number) => {
+        if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return
+
+        try {
+            await itemsApi.delete(id)
+            setShowModal(false)
+            fetchItems()
+            setSelectedIds(prev => {
+                const next = new Set(prev)
+                next.delete(id)
+                return next
+            })
+        } catch (err: any) {
+            alert(err.response?.data?.detail || '삭제에 실패했습니다')
+        }
+    }
+
+    const handleBulkDelete = async () => {
+        if (selectedIds.size === 0) return
+        if (!confirm(`선택한 ${selectedIds.size}개의 게시글을 정말 삭제하시겠습니까?`)) return
+
+        setIsDeleting(true)
+        try {
+            await itemsApi.bulkDelete(Array.from(selectedIds))
+            setSelectedIds(new Set())
+            fetchItems()
+            alert('성공적으로 삭제되었습니다')
+        } catch (err: any) {
+            alert(err.response?.data?.detail || '일괄 삭제에 실패했습니다')
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
+    const handleDeleteAll = async () => {
+        if (!confirm('수집함의 모든 게시글을 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) return
+
+        setIsDeleting(true)
+        try {
+            await itemsApi.deleteAll()
+            setSelectedIds(new Set())
+            fetchItems()
+            alert('모든 게시글이 삭제되었습니다')
+        } catch (err: any) {
+            alert(err.response?.data?.detail || '전체 삭제에 실패했습니다')
+        } finally {
+            setIsDeleting(false)
+        }
+    }
+
+    const toggleSelectAll = () => {
+        if (selectedIds.size === items.length) {
+            setSelectedIds(new Set())
+        } else {
+            setSelectedIds(new Set(items.map(i => i.id)))
+        }
+    }
+
+    const toggleSelectItem = (id: number) => {
+        const next = new Set(selectedIds)
+        if (next.has(id)) next.delete(id)
+        else next.add(id)
+        setSelectedIds(next)
+    }
+
+    const handleExport = () => {
+        if (!selectedItem) return
+
+        const content = `제목: ${selectedItem.title}
+출처: ${selectedItem.source_name} (${selectedItem.source_url})
+게시일: ${selectedItem.published_at ? new Date(selectedItem.published_at).toLocaleDateString('ko-KR') : '알 수 없음'}
+URL: ${selectedItem.url}
+
+${selectedItem.raw_text || selectedItem.summary_text || '내용 없음'}
+
+${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n' + selectedItem.image_urls.join('\n') : ''}`
+
+        navigator.clipboard.writeText(content)
+        alert('내용이 클립보드에 복사되었습니다!')
+    }
+
+    const handleDownload = async (url: string, filename?: string) => {
+        try {
+            const token = localStorage.getItem('token')
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
+            const response = await fetch(`${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}${filename ? `&filename=${encodeURIComponent(filename)}` : ''}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+
+            if (!response.ok) throw new Error('Download failed')
+
+            const blob = await response.blob()
+            const downloadUrl = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = downloadUrl
+
+            // Try to get filename from response headers if not provided
+            const contentDisposition = response.headers.get('Content-Disposition')
+            let finalFilename = filename || 'download'
+            if (contentDisposition && contentDisposition.includes('filename=')) {
+                const match = contentDisposition.match(/filename="?([^";]+)"?/)
+                if (match) finalFilename = match[1]
+            }
+
+            link.setAttribute('download', finalFilename)
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+            window.URL.revokeObjectURL(downloadUrl)
+        } catch (err) {
+            console.error('Download error:', err)
+            alert('다운로드에 실패했습니다.')
+        }
+    }
+
+    const categories = ['행사', '공지', '채용', '지원사업', '안전', '교통', '문화', '축제', '복지', '교육', '환경', '산업']
+
+    const getProxyUrl = (url: string, source_type: string) => {
+        if (!url) return '';
+        if (source_type === 'naver_blog' || url.includes('pstatic.net') || url.includes('naver.com')) {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+            return `${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://m.blog.naver.com/`;
+        }
+        return url;
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-100">
+            <nav className="bg-white shadow-sm sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between h-16">
+                        <div className="flex">
+                            <div className="flex-shrink-0 flex items-center">
+                                <h1 className="text-xl font-bold">사이트 수집기</h1>
+                            </div>
+                            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                                <Link href="/dashboard" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    대시보드
+                                </Link>
+                                <Link href="/items" className="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    수집함
+                                </Link>
+                                <Link href="/sources" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                    출처 관리
+                                </Link>
+                                {user?.role === 'admin' && (
+                                    <Link href="/admin" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                        관리자
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            {user && (
+                                <span className="text-sm text-gray-700 font-medium">
+                                    {user.username} 님
+                                </span>
+                            )}
+                            <button
+                                onClick={() => {
+                                    localStorage.removeItem('token')
+                                    router.push('/login')
+                                }}
+                                className="text-gray-500 hover:text-gray-700 text-sm"
+                            >
+                                로그아웃
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div className="px-4 py-6 sm:px-0">
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex items-center space-x-4">
+                            <h2 className="text-2xl font-bold">수집함</h2>
+                            {refreshing && (
+                                <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
+                            )}
+                        </div>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={handleBulkDelete}
+                                disabled={selectedIds.size === 0 || isDeleting}
+                                className="px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 text-sm font-semibold disabled:opacity-50"
+                            >
+                                선택 삭제 ({selectedIds.size})
+                            </button>
+                            <button
+                                onClick={handleDeleteAll}
+                                disabled={items.length === 0 || isDeleting}
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-semibold disabled:opacity-50"
+                            >
+                                전체 삭제
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Filters */}
+                    <div className="bg-white rounded-lg shadow p-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">구분</label>
+                                <select
+                                    value={typeFilter}
+                                    onChange={(e) => setTypeFilter(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                >
+                                    <option value="">전체</option>
+                                    <option value="generic_board">사이트</option>
+                                    <option value="naver_blog">블로그</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">출처</label>
+                                <select
+                                    value={sourceFilter}
+                                    onChange={(e) => setSourceFilter(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                >
+                                    <option value="">전체</option>
+                                    {sources.map(source => (
+                                        <option key={source.id} value={source.id}>{source.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">검색</label>
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="제목 검색..."
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Error */}
+                    {error && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Items Table */}
+                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                        {loading && items.length === 0 ? (
+                            <div className="p-8 text-center text-gray-400">항목을 불러오는 중...</div>
+                        ) : items.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500">
+                                수집된 항목이 없습니다.
+                                <br />
+                                <Link href="/sources" className="text-blue-500 hover:underline mt-2 inline-block">
+                                    출처를 추가하고 수집을 시작하세요
+                                </Link>
+                            </div>
+                        ) : (
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left">
+                                            <input
+                                                type="checkbox"
+                                                className="w-4 h-4 text-blue-600 rounded"
+                                                checked={items.length > 0 && selectedIds.size === items.length}
+                                                onChange={toggleSelectAll}
+                                            />
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            게시일
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            썸네일
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            제목
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            출처
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            구분
+                                        </th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            작업
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {items.map((item) => (
+                                        <tr key={item.id} className={`hover:bg-gray-50 ${selectedIds.has(item.id) ? 'bg-blue-50' : ''}`}>
+                                            <td className="px-6 py-4">
+                                                <input
+                                                    type="checkbox"
+                                                    className="w-4 h-4 text-blue-600 rounded"
+                                                    checked={selectedIds.has(item.id)}
+                                                    onChange={() => toggleSelectItem(item.id)}
+                                                />
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR') : '-'}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="relative w-16 h-12 bg-gray-100 rounded overflow-hidden border">
+                                                        {item.thumbnail_url ? (
+                                                            <img
+                                                                src={getProxyUrl(item.thumbnail_url, item.source_type)}
+                                                                alt=""
+                                                                className="w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64x48?text=No+Img';
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
+                                                                No Img
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    {item.image_urls && item.image_urls.length > 0 && (
+                                                        <span className="text-xs text-gray-500 font-medium flex items-center bg-gray-100 px-1.5 py-0.5 rounded-full" title={`이미지 ${item.image_urls.length}개`}>
+                                                            📷 {item.image_urls.length}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {item.source_name}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.source_type === 'naver_blog' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                                                    }`}>
+                                                    {item.source_type === 'naver_blog' ? '블로그' : '사이트'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                                <Link
+                                                    href={`/items/${item.id}`}
+                                                    className="text-blue-600 hover:text-blue-900"
+                                                >
+                                                    상세보기
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleDeleteItem(item.id)}
+                                                    className="text-red-600 hover:text-red-900"
+                                                >
+                                                    삭제
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    <div className="mt-4 text-sm text-gray-500">
+                        총 {items.length}개의 항목
+                    </div>
+                </div>
+            </main>
+
+            {/* Modal removed in favor of full detail page */}
+
+        </div>
+    )
+}

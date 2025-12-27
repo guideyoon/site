@@ -1,0 +1,9 @@
+{
+  "list_url": "https://www.ulsan.go.kr/rep/notice/list",
+  "selectors": {
+    "row": ".board-list tbody tr",
+    "title": "td.tit a",
+    "date": "td.date"
+  },
+  "note": "Example configuration for Ulsan City Hall notices. Update with actual selectors after inspecting the site."
+}
