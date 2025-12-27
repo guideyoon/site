@@ -202,12 +202,8 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                 }
             });
 
-            await naverApi.writePost(
-                cafeSettings.club_id,
-                cafeSettings.menu_id,
-                formData
-            )
-            alert('네이버 카페에 성공적으로 업로드되었습니다!')
+            // Naver API integration was removed
+            alert('네이버 카페 업로드 기능은 현재 비활성화되어 있습니다.')
             onClose()
         } catch (error: any) {
             console.error(error)
