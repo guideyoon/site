@@ -52,7 +52,16 @@ async def login(
     db: Session = Depends(get_db)
 ):
     """Login and get JWT token"""
+    print(f"DEBUG: Login attempt for user '{form_data.username}'")
     user = db.query(User).filter(User.username == form_data.username).first()
+    
+    if not user:
+        print(f"DEBUG: Login failed - User '{form_data.username}' not found in DB")
+    else:
+        is_valid = verify_password(form_data.password, user.hashed_password)
+        print(f"DEBUG: User found. ID: {user.id}, Role: {user.role}")
+        print(f"DEBUG: Password check result: {is_valid}")
+        # print(f"DEBUG: Input: {form_data.password}, Hash: {user.hashed_password}") # Uncomment for extreme debug only
     
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
