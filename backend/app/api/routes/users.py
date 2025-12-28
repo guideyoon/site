@@ -25,7 +25,7 @@ class UserUpdate(BaseModel):
     role: Optional[str] = None
     expires_at: Optional[Any] = None # Allow strings or datetimes
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("", response_model=List[UserResponse])
 async def list_users(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_role("admin"))

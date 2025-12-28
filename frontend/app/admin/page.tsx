@@ -16,6 +16,8 @@ interface User {
     login_count: number
 }
 
+const ADMIN_VERSION = "20251228-2230-V15"
+
 export default function AdminPage() {
     const router = useRouter()
     const [users, setUsers] = useState<User[]>([])
@@ -51,7 +53,11 @@ export default function AdminPage() {
             setUsers(response.data)
             setError('')
         } catch (err: any) {
-            setError(err.response?.data?.detail || '사용자 목록을 불러오는데 실패했습니다.')
+            console.error('Fetch users error:', err)
+            const status = err.response?.status
+            const detail = err.response?.data?.detail
+            const msg = `오류 (${status}): ${typeof detail === 'string' ? detail : JSON.stringify(detail) || err.message}`
+            setError(msg)
             if (err.response?.status === 403) {
                 alert('관리자 권한이 필요합니다.')
                 router.push('/dashboard')
@@ -107,7 +113,10 @@ export default function AdminPage() {
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">사용자 관리</h2>
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">사용자 관리</h2>
+                            <span className="text-[10px] text-blue-500 font-mono mt-1">{ADMIN_VERSION}</span>
+                        </div>
                         <button
                             onClick={fetchUsers}
                             className="text-sm text-blue-500 hover:text-blue-400 hover:underline"
