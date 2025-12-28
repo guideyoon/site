@@ -76,12 +76,22 @@ async def login(
     db: Session = Depends(get_db)
 ):
     """Login and get JWT token"""
-    username_hex = form_data.username.encode().hex()
-    print(f"DEBUG: Login attempt for user '{form_data.username}' (Hex: {username_hex})")
+    from app.config import settings
+    from app.database import engine
+    import os
     
-    # Dump first 5 users in DB for verification
-    all_users = db.query(User).limit(5).all()
-    print(f"DEBUG: First 5 users in current DB: {[u.username for u in all_users]}")
+    username_hex = form_data.username.encode().hex()
+    print("----- LOGIN DEBUG START -----")
+    print(f"Attempting login: '{form_data.username}' (Hex: {username_hex})")
+    print(f"API settings.DATABASE_URL: {settings.DATABASE_URL}")
+    print(f"API engine.url: {engine.url}")
+    print(f"API ENV DATABASE_URL: {os.getenv('DATABASE_URL')}")
+    
+    # Dump all users in current DB for verification
+    all_users = db.query(User).all()
+    user_list = [u.username for u in all_users]
+    print(f"API visible users ({len(user_list)}): {user_list}")
+    print("----- LOGIN DEBUG END -----")
     
     user = db.query(User).filter(User.username == form_data.username).first()
     
