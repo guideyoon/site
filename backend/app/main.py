@@ -14,6 +14,40 @@ app = FastAPI(
     version="1.0.0"
 )
 
+@app.on_event("startup")
+async def startup_event():
+    """Ensure admin user exists on startup"""
+    from app.database import SessionLocal
+    from app.models.user import User
+    from app.auth import get_password_hash
+    from datetime import datetime, timezone, timedelta
+    
+    db = SessionLocal()
+    try:
+        admin = db.query(User).filter(User.username == "admin").first()
+        if not admin:
+            print("⚙️ Admin user not found. Creating default admin...")
+            expires_at = datetime.now(timezone.utc) + timedelta(days=365)
+            admin = User(
+                username="admin",
+                hashed_password=get_password_hash("admin123"),
+                role="admin",
+                expires_at=expires_at
+            )
+            db.add(admin)
+            db.commit()
+            print("✅ Default admin user created successfully.")
+        else:
+            print("⚙️ Admin user exists. Ensuring password is correct...")
+            admin.hashed_password = get_password_hash("admin123")
+            admin.role = "admin" # Ensure role is correct
+            db.commit()
+            print("✅ Admin password/role verified and reset.")
+    except Exception as e:
+        print(f"❌ Error during startup admin setup: {e}")
+    finally:
+        db.close()
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
