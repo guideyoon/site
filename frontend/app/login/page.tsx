@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { authApi } from '@/lib/api'
 
 const GOOGLE_CLIENT_ID = "112977498602-ec7c5f4061cred2utcdajk614388igd8.apps.googleusercontent.com"
-const APP_VERSION = "20251228-2100-FINAL-V6"
+const APP_VERSION = "20251228-2120-SERVER-V7"
 
 export default function LoginPage() {
     const router = useRouter()
