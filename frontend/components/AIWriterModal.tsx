@@ -41,6 +41,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
     })
 
     const [rewriting, setRewriting] = useState(false)
+    const [settingsPanelOpen, setSettingsPanelOpen] = useState(false) // Collapsed by default on mobile
     const fileInputRef = useRef<HTMLInputElement>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const rewrittenTextareaRef = useRef<HTMLTextAreaElement>(null)
@@ -299,111 +300,124 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                         )}
 
                         <div className="p-4 border-b dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 flex flex-col gap-3 z-10 shadow-sm transition-colors">
-                            {/* Top Row: Providers */}
-                            <div className="flex justify-between items-center flex-wrap gap-2">
-                                <div className="flex items-center gap-4">
-                                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">AI 모델:</span>
-                                    {[
-                                        { id: 'openai', name: 'CheckGPT', key: 'openai_api_key' },
-                                        { id: 'gemini', name: 'Gemini', key: 'gemini_api_key' },
-                                        { id: 'perplexity', name: 'Perplexity', key: 'perplexity_api_key' }
-                                    ].map((p) => (
-                                        <label key={p.id} className="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="radio"
-                                                name="ai-provider"
-                                                value={p.id}
-                                                checked={provider === p.id}
-                                                onChange={(e) => setProvider(e.target.value)}
-                                                className="accent-purple-600 w-4 h-4 cursor-pointer"
-                                            />
-                                            <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{p.name}</span>
-                                            <span
-                                                className={`w-2 h-2 rounded-full ${apiKeys[p.key as keyof typeof apiKeys] ? 'bg-green-500' : 'bg-red-500'}`}
-                                                title={apiKeys[p.key as keyof typeof apiKeys] ? '준비됨' : '키 필요'}
-                                            />
-                                        </label>
-                                    ))}
-                                </div>
+                            {/* Mobile: Collapsible Toggle */}
+                            <button
+                                onClick={() => setSettingsPanelOpen(!settingsPanelOpen)}
+                                className="md:hidden flex items-center justify-between w-full px-3 py-2 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                            >
+                                <span>AI 설정 {settingsPanelOpen ? '접기' : '펼치기'}</span>
+                                <svg className={`w-4 h-4 transition-transform ${settingsPanelOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
 
-                                <div className="flex items-center gap-3">
-                                    <button
-                                        onClick={() => setPreviewMode(!previewMode)}
-                                        className={`px-4 py-2 text-sm rounded-lg border font-medium flex items-center gap-2 transition-all ${previewMode
-                                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-800 shadow-inner'
-                                            : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 shadow-sm'
-                                            }`}
-                                    >
-                                        {previewMode ? '📝 편집 모드' : '👁️ 미리보기'}
-                                    </button>
+                            <div className={`flex-col gap-3 ${settingsPanelOpen ? 'flex' : 'hidden md:flex'}`}>
+                                {/* Top Row: Providers */}
+                                <div className="flex justify-between items-center flex-wrap gap-2">
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">AI 모델:</span>
+                                        {[
+                                            { id: 'openai', name: 'CheckGPT', key: 'openai_api_key' },
+                                            { id: 'gemini', name: 'Gemini', key: 'gemini_api_key' },
+                                            { id: 'perplexity', name: 'Perplexity', key: 'perplexity_api_key' }
+                                        ].map((p) => (
+                                            <label key={p.id} className="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="radio"
+                                                    name="ai-provider"
+                                                    value={p.id}
+                                                    checked={provider === p.id}
+                                                    onChange={(e) => setProvider(e.target.value)}
+                                                    className="accent-purple-600 w-4 h-4 cursor-pointer"
+                                                />
+                                                <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{p.name}</span>
+                                                <span
+                                                    className={`w-2 h-2 rounded-full ${apiKeys[p.key as keyof typeof apiKeys] ? 'bg-green-500' : 'bg-red-500'}`}
+                                                    title={apiKeys[p.key as keyof typeof apiKeys] ? '준비됨' : '키 필요'}
+                                                />
+                                            </label>
+                                        ))}
+                                    </div>
 
-                                    <button
-                                        onClick={handleRewrite}
-                                        disabled={rewriting || !apiKeys[`${provider}_api_key` as keyof typeof apiKeys]}
-                                        className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg disabled:opacity-50 font-bold shadow-lg shadow-purple-500/20 transition-all active:scale-95 flex items-center gap-2"
-                                    >
-                                        {rewriting && <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>}
-                                        {rewriting ? '작성 중...' : 'AI 다시 쓰기'}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Middle Row: Styles */}
-                            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                                <span className="text-sm font-semibold whitespace-nowrap mr-2 text-gray-700 dark:text-gray-300">스타일:</span>
-                                {mode === 'blog' ? (
-                                    // Blog Styles
-                                    ['news', 'review', 'guide', 'story', 'interview', 'custom'].map((s) => (
+                                    <div className="flex items-center gap-3">
                                         <button
-                                            key={s}
-                                            onClick={() => setStyle(s)}
-                                            className={`px-4 py-1.5 text-xs rounded-full border whitespace-nowrap transition-all ${style === s
-                                                ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-800 text-blue-700 dark:text-blue-400 font-bold'
-                                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                            onClick={() => setPreviewMode(!previewMode)}
+                                            className={`px-4 py-2 text-sm rounded-lg border font-medium flex items-center gap-2 transition-all ${previewMode
+                                                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-800 shadow-inner'
+                                                : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 shadow-sm'
                                                 }`}
                                         >
-                                            {s === 'news' && '뉴스 기사'}
-                                            {s === 'review' && '리뷰'}
-                                            {s === 'guide' && '가이드'}
-                                            {s === 'story' && '스토리'}
-                                            {s === 'interview' && '인터뷰'}
-                                            {s === 'custom' && '직접 입력'}
+                                            {previewMode ? '📝 편집 모드' : '👁️ 미리보기'}
                                         </button>
-                                    ))
-                                ) : (
-                                    // Cafe Styles
-                                    ['review', 'info', 'question', 'viral', 'custom'].map((s) => (
+
                                         <button
-                                            key={s}
-                                            onClick={() => setStyle(s)}
-                                            className={`px-4 py-1.5 text-xs rounded-full border whitespace-nowrap transition-all ${style === s
-                                                ? 'bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-800 text-green-700 dark:text-green-400 font-bold'
-                                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700'
-                                                }`}
+                                            onClick={handleRewrite}
+                                            disabled={rewriting || !apiKeys[`${provider}_api_key` as keyof typeof apiKeys]}
+                                            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg disabled:opacity-50 font-bold shadow-lg shadow-purple-500/20 transition-all active:scale-95 flex items-center gap-2"
                                         >
-                                            {s === 'review' && '성실 회원 후기'}
-                                            {s === 'info' && '꿀팁 공유'}
-                                            {s === 'question' && '질문/토론'}
-                                            {s === 'viral' && '홍보/바이럴'}
-                                            {s === 'custom' && '직접 입력'}
+                                            {rewriting && <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>}
+                                            {rewriting ? '작성 중...' : 'AI 다시 쓰기'}
                                         </button>
-                                    ))
+                                    </div>
+                                </div>
+
+                                {/* Middle Row: Styles */}
+                                <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                                    <span className="text-sm font-semibold whitespace-nowrap mr-2 text-gray-700 dark:text-gray-300">스타일:</span>
+                                    {mode === 'blog' ? (
+                                        // Blog Styles
+                                        ['news', 'review', 'guide', 'story', 'interview', 'custom'].map((s) => (
+                                            <button
+                                                key={s}
+                                                onClick={() => setStyle(s)}
+                                                className={`px-4 py-1.5 text-xs rounded-full border whitespace-nowrap transition-all ${style === s
+                                                    ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-800 text-blue-700 dark:text-blue-400 font-bold'
+                                                    : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                                    }`}
+                                            >
+                                                {s === 'news' && '뉴스 기사'}
+                                                {s === 'review' && '리뷰'}
+                                                {s === 'guide' && '가이드'}
+                                                {s === 'story' && '스토리'}
+                                                {s === 'interview' && '인터뷰'}
+                                                {s === 'custom' && '직접 입력'}
+                                            </button>
+                                        ))
+                                    ) : (
+                                        // Cafe Styles
+                                        ['review', 'info', 'question', 'viral', 'custom'].map((s) => (
+                                            <button
+                                                key={s}
+                                                onClick={() => setStyle(s)}
+                                                className={`px-4 py-1.5 text-xs rounded-full border whitespace-nowrap transition-all ${style === s
+                                                    ? 'bg-green-100 dark:bg-green-900/40 border-green-300 dark:border-green-800 text-green-700 dark:text-green-400 font-bold'
+                                                    : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-700'
+                                                    }`}
+                                            >
+                                                {s === 'review' && '성실 회원 후기'}
+                                                {s === 'info' && '꿀팁 공유'}
+                                                {s === 'question' && '질문/토론'}
+                                                {s === 'viral' && '홍보/바이럴'}
+                                                {s === 'custom' && '직접 입력'}
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+
+                                {style === 'custom' && (
+                                    <div className="mt-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <textarea
+                                            value={customPrompt}
+                                            onChange={(e) => setCustomPrompt(e.target.value)}
+                                            placeholder="AI가 어떻게 글을 작성해야 할지 지침을 입력해 주세요 (예: 20대 여성을 타겟으로 친근하게 작성해줘)"
+                                            className="w-full p-3 text-sm border dark:border-slate-700 rounded-lg h-24 resize-none bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-inner"
+                                        />
+                                    </div>
                                 )}
                             </div>
-
-                            {style === 'custom' && (
-                                <div className="mt-1 animate-in fade-in slide-in-from-top-1 duration-200">
-                                    <textarea
-                                        value={customPrompt}
-                                        onChange={(e) => setCustomPrompt(e.target.value)}
-                                        placeholder="AI가 어떻게 글을 작성해야 할지 지침을 입력해 주세요 (예: 20대 여성을 타겟으로 친근하게 작성해줘)"
-                                        className="w-full p-3 text-sm border dark:border-slate-700 rounded-lg h-24 resize-none bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500 shadow-inner"
-                                    />
-                                </div>
-                            )}
                         </div>
 
                         {/* Editors */}
@@ -449,14 +463,14 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="relative flex-1">
+                                        <div className="relative flex-1 min-h-[200px]">
                                             <textarea
                                                 ref={textareaRef}
                                                 value={content}
                                                 onChange={(e) => setContent(e.target.value)}
                                                 onFocus={() => setActiveEditor('original')}
                                                 readOnly={isOriginalLocked}
-                                                className={`w-full h-full p-5 border rounded-xl resize-none focus:outline-none transition-all ${activeEditor === 'original'
+                                                className={`w-full h-full min-h-[200px] p-5 border rounded-xl resize-none focus:outline-none transition-all ${activeEditor === 'original'
                                                     ? 'ring-2 ring-blue-500 border-blue-500 shadow-lg shadow-blue-500/10'
                                                     : 'border-gray-200 dark:border-slate-800'
                                                     } ${isOriginalLocked ? 'bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-gray-400 cursor-not-allowed' : 'bg-white dark:bg-slate-900 text-gray-900 dark:text-white'}`}
@@ -500,13 +514,13 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                             dangerouslySetInnerHTML={{ __html: rewrittenContent.replace(/\n/g, '<br/>') }}
                                         />
                                     ) : (
-                                        <div className="relative flex-1">
+                                        <div className="relative flex-1 min-h-[200px]">
                                             <textarea
                                                 ref={rewrittenTextareaRef}
                                                 value={rewrittenContent}
                                                 onChange={(e) => setRewrittenContent(e.target.value)}
                                                 onFocus={() => setActiveEditor('rewritten')}
-                                                className={`w-full h-full p-5 border rounded-xl resize-none focus:outline-none transition-all ${activeEditor === 'rewritten'
+                                                className={`w-full h-full min-h-[200px] p-5 border rounded-xl resize-none focus:outline-none transition-all ${activeEditor === 'rewritten'
                                                     ? 'ring-2 ring-purple-500 border-purple-500 bg-white dark:bg-slate-900 shadow-lg shadow-purple-500/10'
                                                     : 'border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/30'
                                                     } text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600`}
