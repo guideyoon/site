@@ -144,8 +144,8 @@ export default function ItemDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="bg-white shadow-sm mb-6 sticky top-0 z-50">
+        <div className="min-h-screen bg-gray-100 dark:bg-slate-950 transition-colors duration-300">
+            <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 mb-6 sticky top-0 z-50 transition-colors">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
@@ -156,7 +156,7 @@ export default function ItemDetailPage() {
             </nav>
 
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-6 mb-6 border border-transparent dark:border-slate-800 transition-colors">
                     <div className="flex justify-between items-start mb-4">
                         <h1 className="text-2xl font-bold">항목 상세</h1>
                         <div className="space-x-2 flex">
@@ -169,19 +169,13 @@ export default function ItemDetailPage() {
                                         수정
                                     </button>
                                     <button
-                                        onClick={handleAddToQueue}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium flex items-center gap-2"
-                                    >
-                                        <span>📥</span> 대기열로 보내기
-                                    </button>
-                                    <button
                                         onClick={() => {
                                             setModalMode('blog')
                                             setShowModal(true)
                                         }}
-                                        className="px-4 py-2 bg-slate-600 text-white rounded hover:bg-slate-700 font-medium flex items-center gap-2"
+                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium flex items-center gap-2"
                                     >
-                                        <span>📝</span> 블로그로 바로 쓰기
+                                        <span>📝</span> 글 편집
                                     </button>
                                 </>
                             ) : (
@@ -256,13 +250,6 @@ export default function ItemDetailPage() {
                                     <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white border-b dark:border-slate-800 pb-2">수집 상세 정보</h2>
                                     <div className="space-y-4">
                                         <div className="flex items-center">
-                                            <span className="w-24 text-gray-500 dark:text-gray-400 text-sm font-medium">유형</span>
-                                            {/* Assuming source_type is not available, using a generic type */}
-                                            <span className={`px-2 py-0.5 text-xs font-bold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400`}>
-                                                웹 게시물
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center">
                                             <span className="w-24 text-gray-500 dark:text-gray-400 text-sm font-medium">게시일시</span>
                                             <span className="text-gray-900 dark:text-gray-200">
                                                 {item.published_at ? new Date(item.published_at).toLocaleString('ko-KR') : '알 수 없음'}
@@ -299,6 +286,7 @@ export default function ItemDetailPage() {
                             <div className="mb-8">
                                 <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white border-b dark:border-slate-800 pb-2">본문 내용</h2>
                                 <div className="bg-gray-50 dark:bg-slate-800/50 rounded-lg p-6 max-h-[500px] overflow-y-auto transition-colors">
+                                    <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white border-b border-gray-200 dark:border-slate-700 pb-4">{item.title}</h3>
                                     <div className="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 whitespace-pre-wrap text-sm leading-relaxed">
                                         {item.raw_text || '본문 내용이 없습니다.'}
                                     </div>
