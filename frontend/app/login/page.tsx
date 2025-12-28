@@ -55,6 +55,7 @@ function LoginContent() {
 
     const googleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
+            console.log('Google Login Success:', tokenResponse)
             setError('')
             setLoading(true)
             try {
@@ -62,13 +63,19 @@ function LoginContent() {
                 localStorage.setItem('token', res.data.access_token)
                 router.push('/dashboard')
             } catch (err: any) {
-                console.error('Google Login Error:', err)
-                setError(err.response?.data?.detail || '구글 로그인에 실패했습니다.')
+                console.error('Google Server Login Error:', err)
+                const msg = err.response?.data?.detail || '서버 로그인 실패'
+                setError(msg)
+                alert('서버 로그인 오류: ' + msg)
             } finally {
                 setLoading(false)
             }
         },
-        onError: () => setError('구글 로그인에 실패했습니다.'),
+        onError: (error) => {
+            console.error('Google Login Error:', error)
+            setError('구글 로그인 실패')
+            alert('구글 로그인 오류: ' + JSON.stringify(error))
+        },
         flow: 'implicit',
     })
 
@@ -132,7 +139,10 @@ function LoginContent() {
 
                     <div className="mt-6 flex justify-center">
                         <button
-                            onClick={() => googleLogin()}
+                            onClick={() => {
+                                console.log('Google login button clicked')
+                                googleLogin()
+                            }}
                             className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-600 py-2.5 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
                         >
                             <svg className="w-5 h-5" viewBox="0 0 24 24">

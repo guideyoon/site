@@ -1,13 +1,12 @@
 import axios from 'axios'
 
 const getApiUrl = () => {
-    // If we're in the browser, use relative paths to support ngrok/proxies
+    // browser environments must use relative paths to leverage Next.js rewrites
     if (typeof window !== 'undefined') {
         return '';
     }
-
-    // SSR or other server-side calls
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    // Server-side (Docker) handles its own NEXT_PUBLIC_API_URL or default
+    return process.env.NEXT_PUBLIC_API_URL || 'http://backend:8000';
 };
 
 const API_URL = getApiUrl();
