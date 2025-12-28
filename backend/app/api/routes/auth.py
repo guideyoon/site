@@ -46,6 +46,30 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
+@router.get("/debug-db")
+async def debug_db_connection(db: Session = Depends(get_db)):
+    """Debug endpoint to inspect DB connection from within the API process"""
+    from app.config import settings
+    from app.database import engine
+    from sqlalchemy import text
+    import os
+    
+    try:
+        # Check actual connection
+        result = db.execute(text("SELECT username FROM users"))
+        users = [row[0] for row in result.fetchall()]
+        
+        return {
+            "env_database_url": os.getenv("DATABASE_URL"),
+            "settings_database_url": settings.DATABASE_URL,
+            "engine_url": str(engine.url),
+            "user_count": len(users),
+            "users": users,
+            "admin_exists": "admin" in users
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 @router.post("/login", response_model=Token)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
