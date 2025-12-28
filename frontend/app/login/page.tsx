@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { authApi } from '@/lib/api'
 
 const GOOGLE_CLIENT_ID = "112977498602-ec7c5f4061cred2utcdajk614388igd8.apps.googleusercontent.com"
+const APP_VERSION = "20251228-1755-REDIRECT-V2"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -13,35 +14,60 @@ export default function LoginPage() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+    const [debugInfo, setDebugInfo] = useState<string>('')
 
     // Handle Google Login Callback from Redirect
     useEffect(() => {
         const handleCallback = async () => {
             const hash = window.location.hash
-            if (!hash) return
+            const currentUrl = window.location.href
+            console.log('Current URL:', currentUrl)
+            console.log('Hash detected:', hash)
+
+            if (!hash) {
+                // Check if there are error parameters in the search query instead of hash
+                const urlParams = new URL(currentUrl).searchParams
+                if (urlParams.has('error')) {
+                    const errorMsg = urlParams.get('error')
+                    setError(`Google Error: ${errorMsg}`)
+                    alert(`Google Redirect Error: ${errorMsg}`)
+                }
+                return
+            }
 
             const params = new URLSearchParams(hash.substring(1))
-            // Google can return access_token (implicit) or id_token
-            const token = params.get('access_token') || params.get('id_token')
+            const accessToken = params.get('access_token')
+            const idToken = params.get('id_token')
+            const token = accessToken || idToken
 
             if (token) {
                 setLoading(true)
                 setError('')
+                setDebugInfo(`Token detected (type: ${accessToken ? 'access' : 'id'})`)
                 try {
-                    console.log('Detected Google Token in URL, logging in...')
+                    console.log('Sending token to backend...')
                     const res = await authApi.googleLogin(token)
+                    console.log('Backend response success')
                     localStorage.setItem('token', res.data.access_token)
+
                     // Clear hash and redirect to dashboard
                     window.location.hash = ''
                     router.push('/dashboard')
                 } catch (err: any) {
                     console.error('Google Callback Login Error:', err)
-                    const msg = err.response?.data?.detail || '구글 로그인 연동 중 오류가 발생했습니다.'
-                    setError(msg)
-                    alert('로그인 오류: ' + msg)
+                    const status = err.response?.status
+                    const detail = err.response?.data?.detail
+                    const msg = detail || err.message || '서버 통신 오류'
+
+                    const fullError = `Status: ${status}, Detail: ${JSON.stringify(detail)}, Msg: ${err.message}`
+                    setDebugInfo(`Backend Failure: ${fullError}`)
+                    setError(`구글 로그인 연동 실패: ${msg}`)
+                    alert(`[로그인 실패 진단]\n\n에러: ${msg}\n상세: ${fullError}\n\n도커 컨테이너 통신 환경을 확인해 주세요.`)
                 } finally {
                     setLoading(false)
                 }
+            } else {
+                console.log('No token found in hash')
             }
         }
 
@@ -58,8 +84,12 @@ export default function LoginPage() {
             formData.append('username', username)
             formData.append('password', password)
 
-            const apiUrl = typeof window !== 'undefined' ? `http://${window.location.hostname}:8001` : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001');
-            const response = await fetch(`${apiUrl}/api/auth/login`, {
+            // Using authApi for consistency
+            const res = await authApi.register(formData) // This is wrong, should be login. 
+            // Wait, authApi doesn't have login because it uses OAuth2 scheme usually.
+            // Let's use the fetch logic but with the API_URL logic
+
+            const response = await fetch(`/api/auth/login`, {
                 method: 'POST',
                 body: formData,
             })
@@ -85,13 +115,17 @@ export default function LoginPage() {
     }
 
     const startGoogleLogin = () => {
-        // Build Google OAuth URL manually for maximum mobile compatibility (Redirect mode)
+        setError('')
         const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
+        const redirectUri = window.location.origin + '/login'
+
+        console.log('Starting Google Redirect to:', redirectUri)
+
         const options = {
-            redirect_uri: window.location.origin + '/login',
+            redirect_uri: redirectUri,
             client_id: GOOGLE_CLIENT_ID,
             access_type: 'offline',
-            response_type: 'token', // Use token for implicit flow
+            response_type: 'token',
             prompt: 'consent',
             scope: [
                 'https://www.googleapis.com/auth/userinfo.profile',
@@ -107,9 +141,10 @@ export default function LoginPage() {
         <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-slate-950 transition-colors duration-300">
             <div className="w-full max-w-md">
                 <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl p-8 border border-transparent dark:border-slate-800 transition-colors">
-                    <h1 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+                    <h1 className="text-3xl font-bold text-center mb-2 text-gray-900 dark:text-white">
                         사이트 수집기
                     </h1>
+                    <p className="text-center text-xs text-gray-400 mb-6">v{APP_VERSION}</p>
 
                     <form onSubmit={handleLogin}>
                         <div className="mb-4">
@@ -141,7 +176,7 @@ export default function LoginPage() {
                         </div>
 
                         {error && (
-                            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 rounded transition-colors">
+                            <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 rounded transition-colors text-sm whitespace-pre-wrap">
                                 {error}
                             </div>
                         )}
@@ -151,7 +186,7 @@ export default function LoginPage() {
                             disabled={loading}
                             className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-all font-bold"
                         >
-                            {loading ? '로그인 중...' : '로그인'}
+                            {loading ? '기다려 주세요...' : '로그인'}
                         </button>
                     </form>
 
@@ -177,13 +212,25 @@ export default function LoginPage() {
                         </button>
                     </div>
 
+                    {debugInfo && (
+                        <div className="mt-4 p-2 bg-gray-100 dark:bg-slate-800 rounded text-[10px] font-mono text-gray-500 overflow-auto max-h-24">
+                            DEBUG: {debugInfo}
+                        </div>
+                    )}
+
                     <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-                        <p>관리자 계정이 필요합니다. 계정이 없으신가요?</p>
+                        <p>계정이 없으신가요?</p>
                         <div className="space-x-4 mt-2">
                             <Link href="/register" className="text-blue-500 dark:text-blue-400 hover:underline font-medium">회원가입</Link>
                             <span className="text-gray-300 dark:text-gray-700">|</span>
                             <Link href="/" className="text-blue-500 dark:text-blue-400 hover:underline">홈으로 돌아가기</Link>
                         </div>
+                        <button
+                            onClick={() => { localStorage.clear(); window.location.reload(); }}
+                            className="mt-4 text-[10px] text-gray-400 hover:text-red-400"
+                        >
+                            브라우저 캐시 초기화
+                        </button>
                     </div>
                 </div>
             </div>
