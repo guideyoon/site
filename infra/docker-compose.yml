@@ -110,10 +110,10 @@ services:
       - NEXT_PUBLIC_API_URL=http://backend:8000
     depends_on:
       - backend
-    volumes:
-      #- ../frontend:/app
-      #- /app/node_modules
-      #- /app/.next
+    # volumes:
+    #   - ../frontend:/app
+    #   - /app/node_modules
+    #   - /app/.next
     command: npm start
 
 volumes:
