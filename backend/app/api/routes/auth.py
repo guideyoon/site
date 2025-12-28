@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
+import requests
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -133,3 +134,147 @@ async def update_settings(
     db.commit()
     db.refresh(current_user)
     return current_user
+
+
+@router.get("/api-balance/{provider}")
+async def get_api_balance(
+    provider: str,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get API balance for a specific provider.
+    """
+    if provider == "openai":
+        key = current_user.openai_api_key
+        if not key:
+            raise HTTPException(status_code=400, detail="OpenAI API key matches not found")
+        
+        try:
+            # Note: This is a best-effort check using semi-official endpoints. 
+            # Traditional API keys (sk-...) might not have permission for the dashboard billing API.
+            # We'll try the usage endpoint as a fallback or indicator.
+            headers = {"Authorization": f"Bearer {key}"}
+            
+            # 1. Use the official usage endpoint to verify the key
+            # Standard API keys (sk-...) CANNOT view USD balance due to OpenAI security policies (2024/2025 updated).
+            import datetime
+            today = datetime.date.today()
+            
+            # This endpoint confirms if the key is valid and working
+            usage_res = requests.get(
+                f"https://api.openai.com/v1/usage?date={today}",
+                headers=headers,
+                timeout=5
+            )
+            
+            if usage_res.status_code == 200:
+                return {
+                    "provider": "openai",
+                    "status": "success",
+                    "message": "API 키가 활성화되어 있습니다. (금액은 정책상 빌링 페이지에서만 확인 가능)",
+                    "billing_url": "https://platform.openai.com/settings/organization/billing/overview"
+                }
+
+            return {
+                "provider": "openai",
+                "status": "restricted",
+                "message": "사용량 정보를 가져올 수 없습니다. 빌링 페이지에서 확인해 주세요.",
+                "billing_url": "https://platform.openai.com/settings/organization/billing/overview"
+            }
+            
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+            
+    elif provider == "gemini":
+        return {
+            "provider": "gemini",
+            "status": "unsupported",
+            "message": "Gemini는 API를 통한 직접 잔액 조회를 지원하지 않습니다.",
+            "billing_url": "https://aistudio.google.com/app/billing"
+        }
+    
+    elif provider == "perplexity":
+        return {
+            "provider": "perplexity",
+            "status": "unsupported",
+            "message": "Perplexity는 API를 통한 직접 잔액 조회를 지원하지 않습니다.",
+            "billing_url": "https://www.perplexity.ai/settings/api"
+        }
+    
+    else:
+        raise HTTPException(status_code=404, detail="Unknown provider")
+
+
+class GoogleLoginRequest(BaseModel):
+    id_token: str
+
+
+GOOGLE_CLIENT_ID = "112977498602-ec7c5f4061cred2utcdajk614388igd8.apps.googleusercontent.com"
+
+
+@router.post("/google", response_model=Token)
+async def google_login(
+    request: GoogleLoginRequest,
+    db: Session = Depends(get_db)
+):
+    """Google Social Login"""
+    from google.oauth2 import id_token
+    from google.auth.transport import requests as google_requests
+    
+    try:
+        # Verify the Google ID token
+        idinfo = id_token.verify_oauth2_token(
+            request.id_token, 
+            google_requests.Request(), 
+            GOOGLE_CLIENT_ID
+        )
+        
+        # ID token is valid. Get user info.
+        email = idinfo['email']
+        # Google ID (subject) can also be used, but email is more convenient for this app
+        
+        # Check if user already exists
+        user = db.query(User).filter(User.username == email).first()
+        
+        if not user:
+            # Create new user for social login
+            from datetime import datetime, timezone, timedelta
+            import secrets
+            import string
+            
+            # Generate a random password for social users (they won't use it, but DB requires it)
+            random_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(20))
+            expires_at = datetime.now(timezone.utc) + timedelta(days=30)
+            
+            user = User(
+                username=email,
+                hashed_password=get_password_hash(random_password),
+                role="viewer",
+                expires_at=expires_at
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        
+        # Create JWT token
+        access_token = create_access_token(data={"sub": user.username})
+        
+        # Update login stats
+        from sqlalchemy.sql import func
+        user.login_count = (user.login_count or 0) + 1
+        user.last_login_at = func.now()
+        db.commit()
+        
+        return {"access_token": access_token, "token_type": "bearer"}
+        
+    except ValueError as e:
+        # Invalid token
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Google ID token: {str(e)}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

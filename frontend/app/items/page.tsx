@@ -250,14 +250,14 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
     };
 
     return (
-        <div className="min-h-screen bg-gray-100">
+        <div className="min-h-screen bg-gray-100 dark:bg-slate-950 transition-colors duration-300">
             <Navbar user={user} />
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center space-x-4">
-                            <h2 className="text-2xl font-bold">수집함</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">수집함</h2>
                             {refreshing && (
                                 <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
                             )}
@@ -266,14 +266,14 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                             <button
                                 onClick={handleBulkDelete}
                                 disabled={selectedIds.size === 0 || isDeleting}
-                                className="px-4 py-2 bg-red-100 text-red-600 rounded-md hover:bg-red-200 text-sm font-semibold disabled:opacity-50"
+                                className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md hover:bg-red-200 dark:hover:bg-red-900/50 text-sm font-semibold disabled:opacity-50 transition-colors"
                             >
                                 선택 삭제 ({selectedIds.size})
                             </button>
                             <button
                                 onClick={handleDeleteAll}
                                 disabled={items.length === 0 || isDeleting}
-                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-semibold disabled:opacity-50"
+                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-semibold disabled:opacity-50 transition-colors"
                             >
                                 전체 삭제
                             </button>
@@ -281,14 +281,14 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                     </div>
 
                     {/* Filters */}
-                    <div className="bg-white rounded-lg shadow p-4 mb-6">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-4 mb-6 border border-transparent dark:border-slate-800 transition-colors">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">구분</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">구분</label>
                                 <select
                                     value={typeFilter}
                                     onChange={(e) => setTypeFilter(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-white bg-white dark:bg-slate-800 transition-colors"
                                 >
                                     <option value="">전체</option>
                                     <option value="generic_board">사이트</option>
@@ -297,11 +297,11 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">출처</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">출처</label>
                                 <select
                                     value={sourceFilter}
                                     onChange={(e) => setSourceFilter(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-white bg-white dark:bg-slate-800 transition-colors"
                                 >
                                     <option value="">전체</option>
                                     {sources.map(source => (
@@ -311,13 +311,13 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">검색</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">검색</label>
                                 <input
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="제목 검색..."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-white bg-white dark:bg-slate-800 transition-colors"
                                 />
                             </div>
                         </div>
@@ -325,17 +325,17 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
 
                     {/* Error */}
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
                             {error}
                         </div>
                     )}
 
                     {/* Items Table */}
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow overflow-hidden border border-transparent dark:border-slate-800 transition-colors">
                         {loading && items.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400">항목을 불러오는 중...</div>
+                            <div className="p-8 text-center text-gray-400 dark:text-gray-500">항목을 불러오는 중...</div>
                         ) : items.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                                 수집된 항목이 없습니다.
                                 <br />
                                 <Link href="/sources" className="text-blue-500 hover:underline mt-2 inline-block">
@@ -343,117 +343,118 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                 </Link>
                             </div>
                         ) : (
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left">
-                                            <input
-                                                type="checkbox"
-                                                className="w-4 h-4 text-blue-600 rounded"
-                                                checked={items.length > 0 && selectedIds.size === items.length}
-                                                onChange={toggleSelectAll}
-                                            />
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            게시일
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            썸네일
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            제목
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            출처
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            구분
-                                        </th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            작업
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {items.map((item) => (
-                                        <tr key={item.id} className={`hover:bg-gray-50 ${selectedIds.has(item.id) ? 'bg-blue-50' : ''}`}>
-                                            <td className="px-6 py-4">
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
+                                    <thead className="bg-gray-50 dark:bg-slate-800/50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left">
                                                 <input
                                                     type="checkbox"
-                                                    className="w-4 h-4 text-blue-600 rounded"
-                                                    checked={selectedIds.has(item.id)}
-                                                    onChange={() => toggleSelectItem(item.id)}
+                                                    className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"
+                                                    checked={items.length > 0 && selectedIds.size === items.length}
+                                                    onChange={toggleSelectAll}
                                                 />
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR') : '-'}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="relative w-16 h-12 bg-gray-100 rounded overflow-hidden border">
-                                                        {item.thumbnail_url ? (
-                                                            <img
-                                                                src={getProxyUrl(item.thumbnail_url, item.source_type)}
-                                                                alt=""
-                                                                className="w-full h-full object-cover"
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64x48?text=No+Img';
-                                                                }}
-                                                            />
-                                                        ) : (
-                                                            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
-                                                                No Img
-                                                            </div>
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                게시일
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                썸네일
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                제목
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                출처
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                구분
+                                            </th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                작업
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
+                                        {items.map((item) => (
+                                            <tr key={item.id} className={`hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                                                <td className="px-6 py-4">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"
+                                                        checked={selectedIds.has(item.id)}
+                                                        onChange={() => toggleSelectItem(item.id)}
+                                                    />
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                    {item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR') : '-'}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="relative w-16 h-12 bg-gray-100 dark:bg-slate-800 rounded overflow-hidden border border-gray-200 dark:border-slate-700">
+                                                            {item.thumbnail_url ? (
+                                                                <img
+                                                                    src={getProxyUrl(item.thumbnail_url, item.source_type)}
+                                                                    alt=""
+                                                                    className="w-full h-full object-cover"
+                                                                    onError={(e) => {
+                                                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64x48?text=No+Img';
+                                                                    }}
+                                                                />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-500">
+                                                                    No Img
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        {item.image_urls && item.image_urls.length > 0 && (
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-full" title={`이미지 ${item.image_urls.length}개`}>
+                                                                📷 {item.image_urls.length}
+                                                            </span>
                                                         )}
                                                     </div>
-                                                    {item.image_urls && item.image_urls.length > 0 && (
-                                                        <span className="text-xs text-gray-500 font-medium flex items-center bg-gray-100 px-1.5 py-0.5 rounded-full" title={`이미지 ${item.image_urls.length}개`}>
-                                                            📷 {item.image_urls.length}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {item.source_name}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.source_type === 'naver_blog' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                                                    }`}>
-                                                    {item.source_type === 'naver_blog' ? '블로그' : '사이트'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                                <Link
-                                                    href={`/items/${item.id}`}
-                                                    className="text-blue-600 hover:text-blue-900"
-                                                >
-                                                    상세보기
-                                                </Link>
-                                                <button
-                                                    onClick={() => handleDeleteItem(item.id)}
-                                                    className="text-red-600 hover:text-red-900"
-                                                >
-                                                    삭제
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{item.title}</div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                    {item.source_name}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.source_type === 'naver_blog'
+                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400'
+                                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                                                        }`}>
+                                                        {item.source_type === 'naver_blog' ? '블로그' : '사이트'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                                    <Link
+                                                        href={`/items/${item.id}`}
+                                                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition-colors"
+                                                    >
+                                                        상세보기
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleDeleteItem(item.id)}
+                                                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition-colors"
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         )}
                     </div>
 
-                    <div className="mt-4 text-sm text-gray-500">
+                    <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
                         총 {items.length}개의 항목
                     </div>
                 </div>
             </main>
-
-            {/* Modal removed in favor of full detail page */}
-
         </div>
     )
 }

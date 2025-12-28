@@ -2,9 +2,9 @@ import axios from 'axios'
 
 const getApiUrl = () => {
     if (typeof window !== 'undefined') {
-        return `http://${window.location.hostname}:8000`;
+        return `http://${window.location.hostname}:8001`;
     }
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
 };
 
 const API_URL = getApiUrl();
@@ -58,6 +58,7 @@ export const itemsApi = {
     delete: (id: number) => api.delete(`/api/items/${id}`),
     bulkDelete: (ids: number[]) => api.post('/api/items/bulk-delete', { item_ids: ids }),
     deleteAll: () => api.post('/api/items/delete-all'),
+    getStats: () => api.get('/api/items/stats'),
 }
 
 export const queueApi = {
@@ -89,6 +90,8 @@ export const authApi = {
     register: (data: any) => api.post('/api/auth/register', data),
     me: () => api.get('/api/auth/me'),
     updateSettings: (data: any) => api.patch('/api/auth/settings', data),
+    getApiBalance: (provider: string) => api.get(`/api/auth/api-balance/${provider}`),
+    googleLogin: (idToken: string) => api.post('/api/auth/google', { id_token: idToken }),
 }
 
 export const uploadApi = {

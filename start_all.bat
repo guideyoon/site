@@ -41,9 +41,8 @@ echo.
 echo ==========================================
 echo   모든 서비스가 시작되었습니다!
 echo.
-echo   - 백엔드: http://localhost:8000
+echo   - 백엔드: http://localhost:8001
 echo   - 프론트: http://localhost:3002
-echo   - 관리자: http://localhost:8000/docs
 echo ==========================================
 echo.
 echo 이 파일을 바탕화면으로 옮겨서 사용하셔도 됩니다.

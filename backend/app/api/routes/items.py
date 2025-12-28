@@ -64,6 +64,39 @@ class BulkDeleteRequest(BaseModel):
     item_ids: List[int]
 
 
+@router.get("/stats")
+async def get_stats(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get collection statistics for the dashboard"""
+    from sqlalchemy import func
+    import datetime
+    from datetime import timedelta
+    
+    # We define 'today' as the last 24 hours to be safe against timezone shifts 
+    # and ensure the user sees recent progress.
+    now = datetime.datetime.now()
+    twenty_four_hours_ago = now - timedelta(hours=24)
+    
+    # Base query for the current user (Isolation)
+    base_query = db.query(Item)
+    if current_user.role != "admin":
+        base_query = base_query.filter(Item.user_id == current_user.id)
+        
+    # Today's collected items (within last 24h)
+    collected_today = base_query.filter(Item.collected_at >= twenty_four_hours_ago).count()
+    
+    # Failed items (total)
+    failed_count = base_query.filter(Item.status == "failed").count()
+    
+    return {
+        "collected_today": collected_today,
+        "failed": failed_count,
+        "pending_approval": 0 # Kept for compatibility but we will remove from UI
+    }
+
+
 @router.get("", response_model=List[ItemResponse])
 async def list_items(
     status: Optional[str] = Query(None),

@@ -162,12 +162,16 @@ export default function AdminPage() {
                                                 {new Date(user.created_at).toLocaleDateString('ko-KR')}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                <input
-                                                    type="date"
-                                                    value={user.expires_at ? new Date(user.expires_at).toISOString().split('T')[0] : ''}
-                                                    onChange={(e) => handleUpdateUser(user.id, { expires_at: e.target.value })}
-                                                    className="border border-gray-300 rounded px-2 py-1 text-sm bg-white"
-                                                />
+                                                {user.role === 'admin' ? (
+                                                    <span className="text-gray-400 font-medium">무제한</span>
+                                                ) : (
+                                                    <input
+                                                        type="date"
+                                                        value={user.expires_at ? new Date(user.expires_at).toISOString().split('T')[0] : ''}
+                                                        onChange={(e) => handleUpdateUser(user.id, { expires_at: e.target.value })}
+                                                        className="border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+                                                    />
+                                                )}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {user.last_login_at ? new Date(user.last_login_at).toLocaleString('ko-KR') : '-'}
@@ -176,13 +180,15 @@ export default function AdminPage() {
                                                 {user.login_count}회
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <button
-                                                    onClick={() => handleDeleteUser(user.id, user.username)}
-                                                    className="text-red-500 hover:text-red-700 disabled:opacity-30"
-                                                    title="사용자 삭제"
-                                                >
-                                                    삭제
-                                                </button>
+                                                {user.role !== 'admin' && (
+                                                    <button
+                                                        onClick={() => handleDeleteUser(user.id, user.username)}
+                                                        className="text-red-500 hover:text-red-700 disabled:opacity-30"
+                                                        title="사용자 삭제"
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
