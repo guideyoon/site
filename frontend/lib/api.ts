@@ -18,8 +18,9 @@ const api = axios.create({
     timeout: 10000, // 10 seconds timeout
 })
 
-// Add auth token to requests
+// Add auth token and logging to requests
 api.interceptors.request.use((config) => {
+    console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, config.params || '')
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('token')
         if (token) {
