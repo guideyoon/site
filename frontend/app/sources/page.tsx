@@ -181,14 +181,14 @@ export default function SourcesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 font-sans">
+        <div className="min-h-screen bg-gray-100 dark:bg-slate-950 font-sans transition-colors duration-300">
             <Navbar user={user} />
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center space-x-4">
-                            <h2 className="text-2xl font-bold text-gray-800">출처 관리</h2>
+                            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">출처 관리</h2>
                             {refreshing && (
                                 <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
                             )}
@@ -203,26 +203,26 @@ export default function SourcesPage() {
 
                     {/* Add Source Form */}
                     {showAddForm && (
-                        <div className="bg-white rounded-lg shadow p-6 mb-6">
-                            <h3 className="text-lg font-semibold mb-4">새 출처 추가</h3>
+                        <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-6 mb-6 border border-gray-200 dark:border-slate-800">
+                            <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">새 출처 추가</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">이름</label>
                                     <input
                                         type="text"
                                         value={newSourceName}
                                         onChange={(e) => setNewSourceName(e.target.value)}
                                         placeholder="예: 울산시청 공지사항"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">타입</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">타입</label>
                                     <select
                                         value={newSourceType}
                                         onChange={(e) => setNewSourceType(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                     >
                                         <option value="generic_board">사이트 (기관/뉴스)</option>
                                         <option value="naver_blog">네이버 블로그</option>
@@ -232,29 +232,29 @@ export default function SourcesPage() {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">기본 URL</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">기본 URL</label>
                                     <input
                                         type="url"
                                         value={newSourceUrl}
                                         onChange={(e) => setNewSourceUrl(e.target.value)}
                                         placeholder="https://example.com"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">수집 주기 (분)</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">수집 주기 (분)</label>
                                     <input
                                         type="number"
                                         value={newSourceInterval}
                                         onChange={(e) => setNewSourceInterval(parseInt(e.target.value))}
                                         min="1"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                     />
                                 </div>
 
                                 <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         크롤링 설정 (JSON, 선택사항)
                                     </label>
                                     <textarea
@@ -262,13 +262,13 @@ export default function SourcesPage() {
                                         onChange={(e) => setNewSourceConfig(e.target.value)}
                                         rows={2}
                                         placeholder='{"list_url": "...", "selectors": {"row": "tr", "title": "a"}}'
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-mono text-sm"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800 font-mono text-sm"
                                     />
                                 </div>
 
                                 <button
                                     onClick={handleAddSource}
-                                    className="md:col-span-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold"
+                                    className="md:col-span-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 font-semibold transition"
                                 >
                                     추가하기
                                 </button>
@@ -278,26 +278,26 @@ export default function SourcesPage() {
 
                     {/* Edit Source Modal */}
                     {editingSource && (
-                        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                            <div className="relative p-8 border w-[600px] shadow-lg rounded-md bg-white">
-                                <h3 className="text-xl font-bold mb-4">출처 정보 수정</h3>
+                        <div className="fixed inset-0 bg-gray-600/50 dark:bg-black/70 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                            <div className="relative p-8 border w-[600px] shadow-lg rounded-md bg-white dark:bg-slate-900 dark:border-slate-700">
+                                <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">출처 정보 수정</h3>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">이름</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">이름</label>
                                         <input
                                             type="text"
                                             value={editingSource.name}
                                             onChange={(e) => setEditingSource({ ...editingSource, name: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">타입</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">타입</label>
                                             <select
                                                 value={editingSource.type}
                                                 onChange={(e) => setEditingSource({ ...editingSource, type: e.target.value })}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                             >
                                                 <option value="generic_board">사이트 (기관/뉴스)</option>
                                                 <option value="naver_blog">네이버 블로그</option>
@@ -306,44 +306,44 @@ export default function SourcesPage() {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">수집 주기 (분)</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">수집 주기 (분)</label>
                                             <input
                                                 type="number"
                                                 value={editingSource.collect_interval}
                                                 onChange={(e) => setEditingSource({ ...editingSource, collect_interval: parseInt(e.target.value) })}
                                                 min="1"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">기본 URL</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">기본 URL</label>
                                         <input
                                             type="url"
                                             value={editingSource.base_url}
                                             onChange={(e) => setEditingSource({ ...editingSource, base_url: e.target.value })}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800"
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700">크롤링 설정 (JSON)</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">크롤링 설정 (JSON)</label>
                                         <textarea
                                             value={editingSource.crawl_policy || ''}
                                             onChange={(e) => setEditingSource({ ...editingSource, crawl_policy: e.target.value })}
                                             rows={3}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black font-mono text-sm"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-slate-700 rounded-md text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800 font-mono text-sm"
                                         />
                                     </div>
                                     <div className="flex space-x-3 pt-4">
                                         <button
                                             onClick={handleUpdateSource}
-                                            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 font-bold"
+                                            className="flex-1 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 font-bold transition"
                                         >
                                             저장
                                         </button>
                                         <button
                                             onClick={() => setEditingSource(null)}
-                                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-bold"
+                                            className="flex-1 px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-slate-600 font-bold transition"
                                         >
                                             취소
                                         </button>
@@ -354,57 +354,59 @@ export default function SourcesPage() {
                     )}
 
                     {notification && (
-                        <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4 animate-fade-in shadow-sm">
+                        <div className="bg-blue-100 dark:bg-blue-900/40 border border-blue-400 dark:border-blue-800 text-blue-700 dark:text-blue-300 px-4 py-3 rounded mb-4 animate-fade-in shadow-sm">
                             {notification}
                         </div>
                     )}
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        <div className="bg-red-100 dark:bg-red-900/40 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
                             {error}
                         </div>
                     )}
 
                     {/* Sources List */}
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow overflow-hidden border border-gray-200 dark:border-slate-800">
                         {loading && sources.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400">출처 목록을 로딩 중...</div>
+                            <div className="p-8 text-center text-gray-400 dark:text-gray-500">출처 목록을 로딩 중...</div>
                         ) : sources.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                                 등록된 출처가 없습니다.
                                 <br />
                                 출처를 추가하여 콘텐츠 수집을 시작하세요.
                             </div>
                         ) : (
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
+                                <thead className="bg-gray-50 dark:bg-slate-800">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">출처 정보</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">구분</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">수집 주기</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">출처 정보</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">구분</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">수집 주기</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">상태</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">관리</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
                                     {sources.map((source) => (
-                                        <tr key={source.id} className="hover:bg-gray-50">
+                                        <tr key={source.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                                             <td className="px-6 py-4">
-                                                <div className="text-sm font-semibold text-gray-900">{source.name}</div>
-                                                <a href={source.base_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+                                                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{source.name}</div>
+                                                <a href={source.base_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">
                                                     {source.base_url}
                                                 </a>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${source.type === 'naver_blog' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${source.type === 'naver_blog'
+                                                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                                                    : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-300'
                                                     }`}>
                                                     {source.type === 'generic_board' ? '사이트' :
                                                         source.type === 'naver_blog' ? '블로그' : source.type}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="text-sm text-gray-900 font-medium">{source.collect_interval}분</div>
+                                                <div className="text-sm text-gray-900 dark:text-gray-100 font-medium">{source.collect_interval}분</div>
                                                 {source.last_collected_at && (
-                                                    <div className="text-xs text-gray-500">
+                                                    <div className="text-xs text-gray-500 dark:text-gray-500">
                                                         {new Date(source.last_collected_at).toLocaleString('ko-KR', { hour12: false, month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
                                                     </div>
                                                 )}
@@ -413,8 +415,8 @@ export default function SourcesPage() {
                                                 <button
                                                     onClick={() => handleToggle(source.id, source.enabled)}
                                                     className={`px-3 py-1 rounded text-xs font-bold transition ${source.enabled
-                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                        : 'bg-red-100 text-red-700 hover:bg-red-200'
+                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
+                                                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
                                                         }`}
                                                 >
                                                     {source.enabled ? 'ON' : 'OFF'}
@@ -425,10 +427,10 @@ export default function SourcesPage() {
                                                     <button
                                                         onClick={() => handleCollect(source.id, source.name)}
                                                         disabled={!source.enabled || collectingIds.has(source.id)}
-                                                        className="px-2 py-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 disabled:opacity-50 flex items-center space-x-1"
+                                                        className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 disabled:opacity-50 flex items-center space-x-1"
                                                     >
                                                         {collectingIds.has(source.id) && (
-                                                            <svg className="animate-spin h-3 w-3 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                            <svg className="animate-spin h-3 w-3 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                             </svg>
@@ -437,13 +439,13 @@ export default function SourcesPage() {
                                                     </button>
                                                     <button
                                                         onClick={() => setEditingSource(source)}
-                                                        className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded hover:bg-indigo-100"
+                                                        className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition"
                                                     >
                                                         수정
                                                     </button>
                                                     <button
                                                         onClick={() => handleDelete(source.id, source.name)}
-                                                        className="px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                                                        className="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-900/50 transition"
                                                     >
                                                         삭제
                                                     </button>
@@ -456,7 +458,7 @@ export default function SourcesPage() {
                         )}
                     </div>
 
-                    <div className="mt-4 text-sm text-gray-500 flex justify-between">
+                    <div className="mt-4 text-sm text-gray-500 dark:text-gray-500 flex justify-between">
                         <span>총 {sources.length}개의 출처 관리 중</span>
                         <span>백그라운드 체크 주기: 5분</span>
                     </div>
