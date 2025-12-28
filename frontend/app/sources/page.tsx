@@ -26,6 +26,7 @@ export default function SourcesPage() {
     const [notification, setNotification] = useState('')
     const [user, setUser] = useState<any>(null)
     const [collectingIds, setCollectingIds] = useState<Set<number>>(new Set())
+    const [confirmingCollect, setConfirmingCollect] = useState<Source | null>(null)
 
     // Add source form
     const [showAddForm, setShowAddForm] = useState(false)
@@ -83,9 +84,17 @@ export default function SourcesPage() {
         }
     }
 
-    const handleCollect = async (id: number, name: string) => {
-        if (!confirm(`"${name}"에서 수집을 시작하시겠습니까?`)) return
+    const handleCollect = (source: Source) => {
+        setConfirmingCollect(source)
+    }
 
+    const executeCollect = async () => {
+        if (!confirmingCollect) return
+        const source = confirmingCollect
+        const id = source.id
+        const name = source.name
+
+        setConfirmingCollect(null)
         setCollectingIds(prev => new Set(prev).add(id))
         console.log(`Starting collection for source ${id}: ${name}`)
 
@@ -358,6 +367,62 @@ export default function SourcesPage() {
                             {notification}
                         </div>
                     )}
+
+                    {/* Collection Confirmation Modal */}
+                    {confirmingCollect && (
+                        <div className="fixed inset-0 bg-gray-600/50 dark:bg-black/70 overflow-y-auto h-full w-full z-[60] flex items-center justify-center p-4">
+                            <div className="relative p-6 border w-full max-w-md shadow-2xl rounded-xl bg-white dark:bg-slate-900 dark:border-slate-800 transition-all transform scale-100">
+                                <div className="flex items-center space-x-3 mb-4 text-blue-600 dark:text-blue-400">
+                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <h3 className="text-xl font-bold">수집 시작 안내</h3>
+                                </div>
+
+                                <div className="space-y-4 mb-6">
+                                    <p className="text-gray-700 dark:text-gray-300">
+                                        <span className="font-semibold text-gray-900 dark:text-white">"{confirmingCollect.name}"</span> 출처에서 지금 즉시 수집을 시작하시겠습니까?
+                                    </p>
+
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-sm space-y-2 border border-blue-100 dark:border-blue-900/30">
+                                        <div className="flex items-start">
+                                            <span className="text-blue-500 mr-2">•</span>
+                                            <p className="text-gray-600 dark:text-gray-400"><strong className="text-gray-800 dark:text-gray-200">10일 이내:</strong> 최근 10일 이내의 새 게시물만 가져옵니다.</p>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="text-blue-500 mr-2">•</span>
+                                            <p className="text-gray-600 dark:text-gray-400"><strong className="text-gray-800 dark:text-gray-200">중복 방지:</strong> 이미 가져온 글은 중복해서 저장하지 않습니다.</p>
+                                        </div>
+                                        <div className="flex items-start">
+                                            <span className="text-blue-500 mr-2">•</span>
+                                            <p className="text-gray-600 dark:text-gray-400"><strong className="text-gray-800 dark:text-gray-200">최신 위주:</strong> 사이트의 최신 목록을 우선적으로 대조합니다.</p>
+                                        </div>
+                                        {!confirmingCollect.enabled && (
+                                            <div className="mt-3 pt-3 border-t border-blue-100 dark:border-blue-900/30 flex items-start">
+                                                <span className="text-orange-500 mr-2">⚡</span>
+                                                <p className="text-orange-700 dark:text-orange-400 font-medium italic">현재 'Off' 상태입니다. 수집 시작 시 자동으로 'On'으로 전환됩니다.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex space-x-3">
+                                    <button
+                                        onClick={executeCollect}
+                                        className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-bold shadow-lg shadow-blue-500/20 active:scale-95 transition"
+                                    >
+                                        지금 시작하기
+                                    </button>
+                                    <button
+                                        onClick={() => setConfirmingCollect(null)}
+                                        className="flex-1 px-4 py-3 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 font-bold transition"
+                                    >
+                                        나중에
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     {error && (
                         <div className="bg-red-100 dark:bg-red-900/40 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
                             {error}
@@ -425,8 +490,8 @@ export default function SourcesPage() {
                                             <td className="px-6 py-4 text-right text-sm font-medium">
                                                 <div className="flex justify-end items-center space-x-2 whitespace-nowrap">
                                                     <button
-                                                        onClick={() => handleCollect(source.id, source.name)}
-                                                        disabled={!source.enabled || collectingIds.has(source.id)}
+                                                        onClick={() => handleCollect(source)}
+                                                        disabled={collectingIds.has(source.id)}
                                                         className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 disabled:opacity-50 flex items-center space-x-1"
                                                     >
                                                         {collectingIds.has(source.id) && (
