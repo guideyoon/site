@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { authApi } from '@/lib/api'
 
 const GOOGLE_CLIENT_ID = "112977498602-ec7c5f4061cred2utcdajk614388igd8.apps.googleusercontent.com"
-const APP_VERSION = "20251228-2210-SERVER-V12-FIX"
+const APP_VERSION = "20251228-2220-SERVER-V13"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -60,7 +60,7 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            const formData = new FormData()
+            const formData = new URLSearchParams()
             formData.append('username', username)
             formData.append('password', password)
 
