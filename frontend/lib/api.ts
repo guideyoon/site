@@ -85,7 +85,7 @@ export const sourcesApi = {
 }
 
 export const usersApi = {
-    list: () => api.get('/api/users/'),
+    list: () => api.get('/api/users'),
     update: (id: number, data: any) => api.patch(`/api/users/${id}`, data),
     delete: (id: number) => api.delete(`/api/users/${id}`),
 }

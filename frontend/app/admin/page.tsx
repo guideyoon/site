@@ -101,89 +101,89 @@ export default function AdminPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 font-sans text-black">
+        <div className="min-h-screen bg-gray-100 dark:bg-slate-950 font-sans text-black dark:text-white transition-colors duration-200">
             <Navbar user={user} />
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800">사용자 관리</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">사용자 관리</h2>
                         <button
                             onClick={fetchUsers}
-                            className="text-sm text-blue-500 hover:underline"
+                            className="text-sm text-blue-500 hover:text-blue-400 hover:underline"
                         >
                             새로고침
                         </button>
                     </div>
 
                     {notification && (
-                        <div className="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700">
+                        <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300">
                             {notification}
                         </div>
                     )}
 
                     {error && (
-                        <div className="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700">
+                        <div className="mb-4 p-4 bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300">
                             {error}
                         </div>
                     )}
 
-                    <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+                    <div className="bg-white dark:bg-slate-900 shadow overflow-x-auto sm:rounded-lg border border-gray-200 dark:border-slate-800">
                         {loading ? (
-                            <div className="p-8 text-center text-gray-500">로딩 중...</div>
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">로딩 중...</div>
                         ) : (
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
+                                <thead className="bg-gray-50 dark:bg-slate-800/50">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">아이디</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">역할</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">가입일</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">만료일</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최근 접속</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">접속 횟수</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">관리</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">아이디</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">역할</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">가입일</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">만료일</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">최근 접속</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">접속 횟수</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">관리</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
                                     {users.map((user) => (
-                                        <tr key={user.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.username}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{user.username}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 <select
                                                     value={user.role}
                                                     onChange={(e) => handleUpdateUser(user.id, { role: e.target.value })}
-                                                    className="border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+                                                    className="border border-gray-300 dark:border-slate-700 rounded px-2 py-1 text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                                                 >
                                                     <option value="admin">관리자 (Admin)</option>
                                                     <option value="viewer">사용자 (User)</option>
                                                 </select>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {new Date(user.created_at).toLocaleDateString('ko-KR')}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {user.role === 'admin' ? (
-                                                    <span className="text-gray-400 font-medium">무제한</span>
+                                                    <span className="text-gray-400 dark:text-gray-600 font-medium">무제한</span>
                                                 ) : (
                                                     <input
                                                         type="date"
                                                         value={user.expires_at ? new Date(user.expires_at).toISOString().split('T')[0] : ''}
                                                         onChange={(e) => handleUpdateUser(user.id, { expires_at: e.target.value })}
-                                                        className="border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+                                                        className="border border-gray-300 dark:border-slate-700 rounded px-2 py-1 text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                                                     />
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {user.last_login_at ? new Date(user.last_login_at).toLocaleString('ko-KR') : '-'}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {user.login_count}회
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 {user.role !== 'admin' && (
                                                     <button
                                                         onClick={() => handleDeleteUser(user.id, user.username)}
-                                                        className="text-red-500 hover:text-red-700 disabled:opacity-30"
+                                                        className="text-red-500 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-30 transition-colors"
                                                         title="사용자 삭제"
                                                     >
                                                         삭제
