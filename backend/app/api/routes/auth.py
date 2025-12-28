@@ -76,7 +76,13 @@ async def login(
     db: Session = Depends(get_db)
 ):
     """Login and get JWT token"""
-    print(f"DEBUG: Login attempt for user '{form_data.username}'")
+    username_hex = form_data.username.encode().hex()
+    print(f"DEBUG: Login attempt for user '{form_data.username}' (Hex: {username_hex})")
+    
+    # Dump first 5 users in DB for verification
+    all_users = db.query(User).limit(5).all()
+    print(f"DEBUG: First 5 users in current DB: {[u.username for u in all_users]}")
+    
     user = db.query(User).filter(User.username == form_data.username).first()
     
     if not user:
