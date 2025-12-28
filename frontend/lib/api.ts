@@ -1,18 +1,13 @@
 import axios from 'axios'
 
 const getApiUrl = () => {
-    // Priority 1: Environment variable (useful for Docker/Production)
-    if (process.env.NEXT_PUBLIC_API_URL) {
-        return process.env.NEXT_PUBLIC_API_URL;
-    }
-
-    // Priority 2: Client-side detection for development
+    // If we're in the browser, use relative paths to support ngrok/proxies
     if (typeof window !== 'undefined') {
-        const port = window.location.port === '3000' ? '8000' : '8001';
-        return `http://${window.location.hostname}:${port}`;
+        return '';
     }
 
-    return 'http://localhost:8001';
+    // SSR or other server-side calls
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 };
 
 const API_URL = getApiUrl();
