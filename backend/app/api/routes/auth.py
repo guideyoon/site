@@ -221,30 +221,37 @@ async def google_login(
     from google.oauth2 import id_token
     from google.auth.transport import requests as google_requests
     
+    print(f"DEBUG: Received Google Token (length: {len(request.id_token)})")
     try:
         # 1. Try to verify as ID Token first (JWT)
         try:
+            print("DEBUG: Attempting ID Token verification...")
             idinfo = id_token.verify_oauth2_token(
                 request.id_token, 
                 google_requests.Request(), 
                 GOOGLE_CLIENT_ID
             )
+            print(f"DEBUG: ID Token verification success for {idinfo.get('email')}")
             email = idinfo['email']
-        except ValueError:
+        except Exception as e:
+            print(f"DEBUG: ID Token verification failed: {str(e)}")
             # 2. If ID Token verification fails, assume it's an Access Token (implicit flow)
-            # Fetch user info from Google's userinfo endpoint
+            print("DEBUG: Attempting Access Token (userinfo) verification...")
             userinfo_res = requests.get(
                 "https://www.googleapis.com/oauth2/v3/userinfo",
                 params={"access_token": request.id_token}
             )
             if not userinfo_res.ok:
+                print(f"DEBUG: Userinfo request failed: {userinfo_res.status_code} - {userinfo_res.text}")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid Google token (neither valid ID token nor Access token)"
+                    detail=f"Invalid Google token ({userinfo_res.status_code})"
                 )
             userinfo = userinfo_res.json()
             email = userinfo.get('email')
+            print(f"DEBUG: Access Token verification success for {email}")
             if not email:
+                print("DEBUG: No email in userinfo response")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Could not retrieve email from Google"
