@@ -51,7 +51,7 @@ services:
         condition: service_healthy
     volumes:
       - ../backend:/app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
 
   worker:
     build:
@@ -108,14 +108,14 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_API_URL=http://52.78.78.131:8000
     depends_on:
       - backend
     volumes:
       - ../frontend:/app
       - /app/node_modules
       - /app/.next
-    command: npm run dev
+    command: npm start
 
 volumes:
   postgres_data:

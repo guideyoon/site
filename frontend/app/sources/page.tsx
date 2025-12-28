@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { sourcesApi, authApi } from '@/lib/api'
+import Navbar from '@/components/Navbar'
 
 interface Source {
     id: number
@@ -181,49 +182,7 @@ export default function SourcesPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 font-sans">
-            <nav className="bg-white shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        <div className="flex">
-                            <div className="flex-shrink-0 flex items-center">
-                                <h1 className="text-xl font-bold text-blue-600">사이트 수집기</h1>
-                            </div>
-                            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                                <Link href="/dashboard" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                    대시보드
-                                </Link>
-                                <Link href="/items" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                    수집함
-                                </Link>
-                                <Link href="/sources" className="border-blue-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                    출처 관리
-                                </Link>
-                                {user?.role === 'admin' && (
-                                    <Link href="/admin" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                        관리자
-                                    </Link>
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            {user && (
-                                <span className="text-sm text-gray-700 font-medium">
-                                    {user.username} 님
-                                </span>
-                            )}
-                            <button
-                                onClick={() => {
-                                    localStorage.removeItem('token')
-                                    router.push('/login')
-                                }}
-                                className="text-gray-500 hover:text-gray-700 text-sm"
-                            >
-                                로그아웃
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            <Navbar user={user} />
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
