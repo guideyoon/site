@@ -259,7 +259,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                     </button>
                 </div>
 
-                <div className="flex-1 flex overflow-hidden">
+                <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                     <div className="flex-1 flex flex-col border-r dark:border-slate-800 overflow-hidden">
 
                         {/* Cafe Specific Settings Bar */}
@@ -526,7 +526,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                     </div>
 
                     {/* Image Gallery */}
-                    <div className="w-80 bg-gray-50 dark:bg-slate-900/80 p-5 border-l dark:border-slate-800 overflow-y-auto transition-colors">
+                    <div className="w-full lg:w-80 h-48 lg:h-auto bg-gray-50 dark:bg-slate-900/80 p-5 border-t lg:border-t-0 lg:border-l dark:border-slate-800 overflow-y-auto transition-colors flex-shrink-0">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
