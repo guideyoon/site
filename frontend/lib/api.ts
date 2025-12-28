@@ -1,10 +1,18 @@
 import axios from 'axios'
 
 const getApiUrl = () => {
-    if (typeof window !== 'undefined') {
-        return `http://${window.location.hostname}:8001`;
+    // Priority 1: Environment variable (useful for Docker/Production)
+    if (process.env.NEXT_PUBLIC_API_URL) {
+        return process.env.NEXT_PUBLIC_API_URL;
     }
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+
+    // Priority 2: Client-side detection for development
+    if (typeof window !== 'undefined') {
+        const port = window.location.port === '3000' ? '8000' : '8001';
+        return `http://${window.location.hostname}:${port}`;
+    }
+
+    return 'http://localhost:8001';
 };
 
 const API_URL = getApiUrl();
