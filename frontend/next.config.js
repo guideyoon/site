@@ -2,9 +2,13 @@
 const nextConfig = {
     output: 'standalone',
     async rewrites() {
-        // Use environment variable for backend URL, default to localhost for local dev
-        const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
-        console.log('Using BACKEND_URL for rewrites:', BACKEND_URL);
+        // Dynamic backend URL detection
+        // 1. BACKEND_URL env (set in Docker)
+        // 2. Default to 8001 for local development (start_all.bat)
+        // 3. Fallback to 8000 for standard Docker setups
+        const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+
+        console.log('Next.js Rewrites: Forwarding /api/* to', BACKEND_URL);
 
         return [
             {

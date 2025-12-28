@@ -1,12 +1,13 @@
 import axios from 'axios'
 
 const getApiUrl = () => {
-    // browser environments must use relative paths to leverage Next.js rewrites
+    // Browser side: always use relative paths for Proxy/ngrok support
     if (typeof window !== 'undefined') {
         return '';
     }
-    // Server-side (Docker) handles its own NEXT_PUBLIC_API_URL or default
-    return process.env.NEXT_PUBLIC_API_URL || 'http://backend:8000';
+    // Server side / Build time: 
+    // Prefer Docker service name, fallback to local dev port 8001
+    return process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://localhost:8001';
 };
 
 const API_URL = getApiUrl();
