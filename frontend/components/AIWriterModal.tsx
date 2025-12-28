@@ -604,7 +604,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                     <div className="flex gap-3">
                         <button
                             onClick={onClose}
-                            className="px-5 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                            className="px-5 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 font-medium hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors whitespace-nowrap hidden sm:block"
                         >
                             닫기
                         </button>
@@ -624,15 +624,15 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                 {postingToCafe ? '업로드 중...' : '네이버 카페에 업로드'}
                             </button>
                         ) : (
-                            <div className="flex gap-3">
+                            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                                 <button
-                                    className="px-5 py-2 bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-slate-700 font-bold transition-all border border-transparent dark:border-slate-700"
+                                    className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-2 bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-slate-700 font-bold transition-all border border-transparent dark:border-slate-700 text-sm sm:text-base whitespace-nowrap"
                                     onClick={() => handleCopyHtml(content)}
                                 >
                                     원본 복사
                                 </button>
                                 <button
-                                    className="px-8 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-lg shadow-purple-500/20 disabled:opacity-50 font-bold transform active:scale-95 transition-all flex items-center gap-2"
+                                    className="w-full sm:w-auto px-4 sm:px-8 py-2.5 sm:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg shadow-lg shadow-purple-500/20 disabled:opacity-50 font-bold transform active:scale-95 transition-all flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
                                     onClick={() => rewrittenContent && handleCopyHtml(rewrittenContent)}
                                     disabled={!rewrittenContent}
                                 >

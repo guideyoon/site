@@ -173,9 +173,9 @@ export default function ItemDetailPage() {
                                             setModalMode('blog')
                                             setShowModal(true)
                                         }}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium flex items-center gap-2"
+                                        className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium flex items-center gap-1 sm:gap-2 whitespace-nowrap text-xs sm:text-base"
                                     >
-                                        <span>📝</span> 글 편집
+                                        <span>📝</span> <span className="hidden sm:inline">글 편집</span><span className="sm:hidden">편집</span>
                                     </button>
                                 </>
                             ) : (
@@ -197,13 +197,13 @@ export default function ItemDetailPage() {
                             {/* New buttons from snippet, keeping them but they are not part of original functionality */}
                             <button
                                 onClick={handleExport}
-                                className="px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-700 rounded-md hover:bg-gray-50 dark:hover:bg-slate-700 text-sm font-medium transition-colors"
+                                className="px-3 sm:px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-700 rounded-md hover:bg-gray-50 dark:hover:bg-slate-700 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
                             >
-                                내용 복사
+                                <span className="hidden sm:inline">내용 복사</span><span className="sm:hidden">복사</span>
                             </button>
                             <button
                                 onClick={handleDeleteItem}
-                                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium transition-colors"
+                                className="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
                             >
                                 삭제
                             </button>

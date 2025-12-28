@@ -118,6 +118,10 @@ async def list_items(
     # Apply filters
     if status:
         query = query.filter(Item.status == status)
+    else:
+        # Default: Exclude deleted items
+        query = query.filter(Item.status != "deleted")
+        
     if category:
         query = query.filter(Item.category == category)
     if type:
@@ -402,13 +406,16 @@ async def delete_item(
     if current_user.role != "admin" and item.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
     
+    # Soft Delete: Update status to 'deleted'
+    item.status = "deleted"
+    
+    # Clean up associated data but keep the Item for dedup check
     # Check if in queue (delete from queue first)
     db.query(Queue).filter(Queue.item_id == item_id).delete()
-    # Delete duplicates
+    # Delete duplicates references
     db.query(Duplicate).filter(Duplicate.item_id == item_id).delete()
     db.query(Duplicate).filter(Duplicate.duplicate_of_item_id == item_id).delete()
     
-    db.delete(item)
     db.commit()
     return {"message": "Item deleted successfully"}
 
@@ -437,8 +444,9 @@ async def bulk_delete_items(
     db.query(Duplicate).filter(Duplicate.item_id.in_(found_ids)).delete(synchronize_session=False)
     db.query(Duplicate).filter(Duplicate.duplicate_of_item_id.in_(found_ids)).delete(synchronize_session=False)
     
-    # Delete the items
-    deleted_count = items.delete(synchronize_session=False)
+    # Soft delete: update status
+    # We iterate because update with 'in_' and 'synchronize_session=False' is efficient
+    deleted_count = items.update({Item.status: "deleted"}, synchronize_session=False)
     db.commit()
     
     return {"message": f"Successfully deleted {deleted_count} items", "deleted_count": deleted_count}
@@ -467,8 +475,8 @@ async def delete_all_items(
     db.query(Duplicate).filter(Duplicate.item_id.in_(item_ids)).delete(synchronize_session=False)
     db.query(Duplicate).filter(Duplicate.duplicate_of_item_id.in_(item_ids)).delete(synchronize_session=False)
     
-    # Delete all items
-    deleted_count = query.delete(synchronize_session=False)
+    # Soft delete all
+    deleted_count = query.update({Item.status: "deleted"}, synchronize_session=False)
     db.commit()
     
     return {"message": f"Successfully deleted all {deleted_count} items", "deleted_count": deleted_count}
