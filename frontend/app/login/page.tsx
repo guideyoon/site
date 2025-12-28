@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { authApi } from '@/lib/api'
 
 const GOOGLE_CLIENT_ID = "112977498602-ec7c5f4061cred2utcdajk614388igd8.apps.googleusercontent.com"
-const APP_VERSION = "20251228-2130-SERVER-V8"
+const APP_VERSION = "20251228-2140-SERVER-V9"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -147,12 +147,14 @@ export default function LoginPage() {
                     </div>
 
                     <button onClick={startGoogleLogin} disabled={loading}
-                        className="mt-6 w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-600 py-2.5 rounded-lg hover:bg-gray-50 disabled:opacity-50">
+                        className="mt-6 w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 shadow-sm">
                         <svg className="w-5 h-5" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05" d="M5.41 13.97a7.843 7.843 0 0 1 0-3.94l-3.57-2.77C.86 8.78 0 10.32 0 12c0 1.68.86 3.22 1.84 4.77l3.57-2.77z" />
+                            <path fill="#EA4335" d="M12 4.75c1.61 0 3.06.56 4.21 1.64l3.16-3.16C17.45 1.5 14.97 0 12 0 7.7 0 3.99 2.53 2.18 6.53l3.57 2.77C6.71 6.69 9.14 4.75 12 4.75z" />
                         </svg>
-                        <span className="font-medium">Google 로그인</span>
+                        <span className="font-medium font-roboto text-sm">Google 계정으로 로그인</span>
                     </button>
 
                     <div className="mt-8 pt-6 border-t border-gray-100 dark:border-slate-800 flex flex-col items-center gap-4">
