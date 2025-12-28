@@ -35,14 +35,19 @@ async def startup_event():
                 expires_at=expires_at
             )
             db.add(admin)
-            db.commit()
-            print("✅ Default admin user created successfully.")
+            try:
+                db.commit()
+                print("✅ Default admin user created successfully.")
+            except Exception:
+                db.rollback()
+                # Most likely another worker already created it
+                pass
         else:
-            print("⚙️ Admin user exists. Ensuring password is correct...")
+            # print("⚙️ Admin user exists. Ensuring password is correct...")
             admin.hashed_password = get_password_hash("admin123")
             admin.role = "admin" # Ensure role is correct
             db.commit()
-            print("✅ Admin password/role verified and reset.")
+            # print("✅ Admin password/role verified and reset.")
     except Exception as e:
         print(f"❌ Error during startup admin setup: {e}")
     finally:

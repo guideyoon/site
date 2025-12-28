@@ -46,62 +46,13 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
-@router.get("/debug-db")
-async def debug_db_connection(db: Session = Depends(get_db)):
-    """Debug endpoint to inspect DB connection from within the API process"""
-    from app.config import settings
-    from app.database import engine
-    from sqlalchemy import text
-    import os
-    
-    try:
-        # Check actual connection
-        result = db.execute(text("SELECT username FROM users"))
-        users = [row[0] for row in result.fetchall()]
-        
-        return {
-            "env_database_url": os.getenv("DATABASE_URL"),
-            "settings_database_url": settings.DATABASE_URL,
-            "engine_url": str(engine.url),
-            "user_count": len(users),
-            "users": users,
-            "admin_exists": "admin" in users
-        }
-    except Exception as e:
-        return {"error": str(e)}
-
 @router.post("/login", response_model=Token)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
     """Login and get JWT token"""
-    from app.config import settings
-    from app.database import engine
-    import os
-    
-    username_hex = form_data.username.encode().hex()
-    print("----- LOGIN DEBUG START -----")
-    print(f"Attempting login: '{form_data.username}' (Hex: {username_hex})")
-    print(f"API settings.DATABASE_URL: {settings.DATABASE_URL}")
-    print(f"API engine.url: {engine.url}")
-    print(f"API ENV DATABASE_URL: {os.getenv('DATABASE_URL')}")
-    
-    # Dump all users in current DB for verification
-    all_users = db.query(User).all()
-    user_list = [u.username for u in all_users]
-    print(f"API visible users ({len(user_list)}): {user_list}")
-    print("----- LOGIN DEBUG END -----")
-    
     user = db.query(User).filter(User.username == form_data.username).first()
-    
-    if not user:
-        print(f"DEBUG: Login failed - User '{form_data.username}' not found in DB")
-    else:
-        is_valid = verify_password(form_data.password, user.hashed_password)
-        print(f"DEBUG: User found. ID: {user.id}, Role: {user.role}")
-        print(f"DEBUG: Password check result: {is_valid}")
-        # print(f"DEBUG: Input: {form_data.password}, Hash: {user.hashed_password}") # Uncomment for extreme debug only
     
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
