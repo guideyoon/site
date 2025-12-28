@@ -60,7 +60,7 @@ async def create_source(
         base_url=source_data.base_url,
         collect_interval=source_data.collect_interval,
         crawl_policy=source_data.crawl_policy,
-        enabled=True,
+        enabled=False,
         user_id=current_user.id
     )
     db.add(new_source)
@@ -171,6 +171,11 @@ async def trigger_collection(
     
     # Import here to avoid circular dependency
     from worker.tasks.collection import collect_source
+    
+    # Set source to enabled on manual trigger
+    if not source.enabled:
+        source.enabled = True
+        db.commit()
     
     try:
         # Trigger async task
