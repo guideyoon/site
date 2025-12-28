@@ -408,7 +408,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
 
                         {/* Editors */}
                         <div className="flex-1 flex flex-col p-4 overflow-hidden relative bg-white dark:bg-slate-950 transition-colors">
-                            <div className="flex-1 flex gap-6 overflow-hidden">
+                            <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 overflow-hidden">
                                 <div className="flex-1 flex flex-col group/original">
                                     <div className="flex justify-between items-center mb-1.5 px-1">
                                         <label className="text-sm font-bold text-gray-700 dark:text-gray-400 uppercase tracking-tight flex items-center gap-1.5">
@@ -478,7 +478,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                     )}
                                 </div>
 
-                                <div className="flex flex-col justify-center">
+                                <div className="hidden md:flex flex-col justify-center">
                                     <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-400 animate-pulse">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -526,7 +526,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                     </div>
 
                     {/* Image Gallery */}
-                    <div className="w-full lg:w-80 h-48 lg:h-auto bg-gray-50 dark:bg-slate-900/80 p-5 border-t lg:border-t-0 lg:border-l dark:border-slate-800 overflow-y-auto transition-colors flex-shrink-0">
+                    <div className="w-full lg:w-80 h-32 lg:h-auto bg-gray-50 dark:bg-slate-900/80 p-3 lg:p-5 border-t lg:border-t-0 lg:border-l dark:border-slate-800 overflow-y-auto transition-colors flex-shrink-0">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
