@@ -169,13 +169,19 @@ export default function ItemDetailPage() {
                                         수정
                                     </button>
                                     <button
+                                        onClick={handleAddToQueue}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium flex items-center gap-2"
+                                    >
+                                        <span>📥</span> 대기열로 보내기
+                                    </button>
+                                    <button
                                         onClick={() => {
                                             setModalMode('blog')
                                             setShowModal(true)
                                         }}
-                                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-medium flex items-center gap-2"
+                                        className="px-4 py-2 bg-slate-600 text-white rounded hover:bg-slate-700 font-medium flex items-center gap-2"
                                     >
-                                        <span>📝</span> 블로그로 내보내기
+                                        <span>📝</span> 블로그로 바로 쓰기
                                     </button>
                                 </>
                             ) : (

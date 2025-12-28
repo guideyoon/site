@@ -189,6 +189,24 @@ export default function SourcesPage() {
         }
     }
 
+
+    const getTimeAgo = (dateString: string | null) => {
+        if (!dateString) return '수집 기록 없음';
+        const now = new Date();
+        const past = new Date(dateString);
+        const diffMs = now.getTime() - past.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+
+        if (diffMins < 1) return '방금 전';
+        if (diffMins < 60) return `${diffMins}분 전`;
+
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours}시간 전`;
+
+        const diffDays = Math.floor(diffHours / 24);
+        return `${diffDays}일 전`;
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-slate-950 font-sans transition-colors duration-300">
             <Navbar user={user} />
@@ -477,15 +495,23 @@ export default function SourcesPage() {
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <button
-                                                    onClick={() => handleToggle(source.id, source.enabled)}
-                                                    className={`px-3 py-1 rounded text-xs font-bold transition ${source.enabled
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
-                                                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
-                                                        }`}
-                                                >
-                                                    {source.enabled ? 'ON' : 'OFF'}
-                                                </button>
+                                                <div className="relative group inline-block">
+                                                    <button
+                                                        onClick={() => handleToggle(source.id, source.enabled)}
+                                                        className={`px-3 py-1 rounded text-xs font-bold transition ${source.enabled
+                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
+                                                            : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50'
+                                                            }`}
+                                                    >
+                                                        {source.enabled ? 'ON' : 'OFF'}
+                                                    </button>
+                                                    {source.enabled && (
+                                                        <div className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 dark:bg-slate-700 text-white text-[10px] rounded whitespace-nowrap z-10 shadow-lg pointer-events-none">
+                                                            마지막 수집: {getTimeAgo(source.last_collected_at)}
+                                                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800 dark:border-t-slate-700"></div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-right text-sm font-medium">
                                                 <div className="flex justify-end items-center space-x-2 whitespace-nowrap">
