@@ -1,20 +1,51 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google'
 import { authApi } from '@/lib/api'
 
 const GOOGLE_CLIENT_ID = "112977498602-ec7c5f4061cred2utcdajk614388igd8.apps.googleusercontent.com"
 
-function RegisterContent() {
+export default function RegisterPage() {
     const router = useRouter()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+
+    // Handle Google Login Callback from Redirect
+    useEffect(() => {
+        const handleCallback = async () => {
+            const hash = window.location.hash
+            if (!hash) return
+
+            const params = new URLSearchParams(hash.substring(1))
+            const token = params.get('access_token') || params.get('id_token')
+
+            if (token) {
+                setLoading(true)
+                setError('')
+                try {
+                    console.log('Detected Google Token in URL for registration...')
+                    const res = await authApi.googleLogin(token)
+                    localStorage.setItem('token', res.data.access_token)
+                    window.location.hash = ''
+                    router.push('/dashboard')
+                } catch (err: any) {
+                    console.error('Google Callback Login Error (Register):', err)
+                    const msg = err.response?.data?.detail || '구글 로그인 연동 중 오류가 발생했습니다.'
+                    setError(msg)
+                    alert('로그인 오류: ' + msg)
+                } finally {
+                    setLoading(false)
+                }
+            }
+        }
+
+        handleCallback()
+    }, [router])
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -42,24 +73,23 @@ function RegisterContent() {
         }
     }
 
-    const googleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            setError('')
-            setLoading(true)
-            try {
-                const res = await authApi.googleLogin(tokenResponse.access_token)
-                localStorage.setItem('token', res.data.access_token)
-                router.push('/dashboard')
-            } catch (err: any) {
-                console.error('Google Login Error:', err)
-                setError(err.response?.data?.detail || '구글 로그인에 실패했습니다.')
-            } finally {
-                setLoading(false)
-            }
-        },
-        onError: () => setError('구글 로그인에 실패했습니다.'),
-        flow: 'implicit',
-    })
+    const startGoogleLogin = () => {
+        const rootUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
+        const options = {
+            redirect_uri: window.location.origin + '/register', // Note: using /register for registration
+            client_id: GOOGLE_CLIENT_ID,
+            access_type: 'offline',
+            response_type: 'token',
+            prompt: 'consent',
+            scope: [
+                'https://www.googleapis.com/auth/userinfo.profile',
+                'https://www.googleapis.com/auth/userinfo.email',
+            ].join(' '),
+        }
+
+        const qs = new URLSearchParams(options).toString()
+        window.location.href = `${rootUrl}?${qs}`
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-slate-950 transition-colors duration-300">
@@ -137,8 +167,9 @@ function RegisterContent() {
 
                     <div className="mt-6 flex justify-center">
                         <button
-                            onClick={() => googleLogin()}
-                            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-600 py-2.5 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+                            onClick={startGoogleLogin}
+                            disabled={loading}
+                            className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-600 py-2.5 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors shadow-sm disabled:opacity-50"
                         >
                             <svg className="w-5 h-5" viewBox="0 0 24 24">
                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -146,7 +177,7 @@ function RegisterContent() {
                                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                             </svg>
-                            <span className="font-medium">Google 계정으로 가입</span>
+                            <span className="font-medium">{loading ? '연동 중...' : 'Google 계정으로 가입'}</span>
                         </button>
                     </div>
 
@@ -157,13 +188,5 @@ function RegisterContent() {
                 </div>
             </div>
         </div>
-    )
-}
-
-export default function RegisterPage() {
-    return (
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <RegisterContent />
-        </GoogleOAuthProvider>
     )
 }
