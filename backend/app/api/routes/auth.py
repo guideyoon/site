@@ -222,16 +222,33 @@ async def google_login(
     from google.auth.transport import requests as google_requests
     
     try:
-        # Verify the Google ID token
-        idinfo = id_token.verify_oauth2_token(
-            request.id_token, 
-            google_requests.Request(), 
-            GOOGLE_CLIENT_ID
-        )
-        
-        # ID token is valid. Get user info.
-        email = idinfo['email']
-        # Google ID (subject) can also be used, but email is more convenient for this app
+        # 1. Try to verify as ID Token first (JWT)
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                request.id_token, 
+                google_requests.Request(), 
+                GOOGLE_CLIENT_ID
+            )
+            email = idinfo['email']
+        except ValueError:
+            # 2. If ID Token verification fails, assume it's an Access Token (implicit flow)
+            # Fetch user info from Google's userinfo endpoint
+            userinfo_res = requests.get(
+                "https://www.googleapis.com/oauth2/v3/userinfo",
+                params={"access_token": request.id_token}
+            )
+            if not userinfo_res.ok:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid Google token (neither valid ID token nor Access token)"
+                )
+            userinfo = userinfo_res.json()
+            email = userinfo.get('email')
+            if not email:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Could not retrieve email from Google"
+                )
         
         # Check if user already exists
         user = db.query(User).filter(User.username == email).first()
