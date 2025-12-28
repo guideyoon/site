@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { authApi } from '@/lib/api'
 
 const GOOGLE_CLIENT_ID = "112977498602-ec7c5f4061cred2utcdajk614388igd8.apps.googleusercontent.com"
-const APP_VERSION = "20251228-2120-SERVER-V7"
+const APP_VERSION = "20251228-2130-SERVER-V8"
 
 export default function LoginPage() {
     const router = useRouter()
@@ -89,7 +89,6 @@ export default function LoginPage() {
         const options = {
             redirect_uri: window.location.origin + '/login',
             client_id: GOOGLE_CLIENT_ID,
-            access_type: 'offline',
             response_type: 'token',
             prompt: 'consent',
             scope: [

@@ -78,7 +78,6 @@ export default function RegisterPage() {
         const options = {
             redirect_uri: window.location.origin + '/register', // Note: using /register for registration
             client_id: GOOGLE_CLIENT_ID,
-            access_type: 'offline',
             response_type: 'token',
             prompt: 'consent',
             scope: [
