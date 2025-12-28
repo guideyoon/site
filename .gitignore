@@ -63,3 +63,9 @@ logs/
 
 # Media
 backend/static/uploads/
+
+# Celery
+celerybeat-schedule
+celerybeat-schedule.dat
+celerybeat-schedule.bak
+celerybeat-schedule.dir
