@@ -540,9 +540,9 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                     </div>
 
                     {/* Image Gallery */}
-                    <div className="w-full lg:w-80 bg-gray-50 dark:bg-slate-900/80 p-3 lg:p-5 border-t lg:border-t-0 lg:border-l dark:border-slate-800 overflow-y-auto transition-colors flex-shrink-0 max-h-[40vh] lg:max-h-none">
-                        <div className="flex justify-between items-center mb-5">
-                            <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <div className="w-full lg:w-80 bg-gray-50 dark:bg-slate-900/80 p-3 lg:p-5 border-t lg:border-t-0 lg:border-l dark:border-slate-800 transition-colors flex-shrink-0 flex flex-col">
+                        <div className="flex justify-between items-center mb-3 lg:mb-5">
+                            <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-sm lg:text-base">
                                 <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
@@ -551,10 +551,10 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                             </h3>
                             <button
                                 onClick={() => fileInputRef.current?.click()}
-                                className="p-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+                                className="p-1.5 lg:p-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95"
                                 title="이미지 업로드"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                                 </svg>
                             </button>
@@ -567,10 +567,10 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                             />
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="flex lg:flex-col gap-3 lg:gap-4 overflow-x-auto lg:overflow-x-visible lg:overflow-y-auto pb-2 lg:pb-0 scrollbar-hide min-h-[120px] lg:min-h-0 items-start">
                             {images.length === 0 && (
-                                <div className="py-20 text-center flex flex-col items-center gap-2">
-                                    <svg className="w-12 h-12 text-gray-300 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="w-full py-8 lg:py-20 text-center flex flex-col items-center gap-2">
+                                    <svg className="w-10 h-10 lg:w-12 lg:h-12 text-gray-300 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
                                     <p className="text-xs text-gray-400 dark:text-gray-600">등록된 이미지가 없습니다</p>
@@ -578,7 +578,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                             )}
 
                             {images.map((img, idx) => (
-                                <div key={idx} className="group relative bg-white dark:bg-slate-800 p-2 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden animate-in zoom-in-95 duration-200">
+                                <div key={idx} className="group relative bg-white dark:bg-slate-800 p-2 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden w-40 lg:w-full flex-shrink-0 animate-in zoom-in-95 duration-200">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img src={img.url} alt={`Img ${idx}`} className="w-full aspect-video object-cover rounded-lg" />
 
@@ -586,7 +586,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 gap-2 p-2">
                                         <button
                                             onClick={() => insertImage(img.url)}
-                                            className="w-full py-2 bg-white text-gray-900 text-xs font-bold rounded-lg shadow-xl hover:bg-gray-100 transform translate-y-2 group-hover:translate-y-0 transition-all active:scale-95"
+                                            className="w-full py-1.5 lg:py-2 bg-white text-gray-900 text-xs font-bold rounded-lg shadow-xl hover:bg-gray-100 transform translate-y-2 group-hover:translate-y-0 transition-all active:scale-95 whitespace-nowrap"
                                         >
                                             본문에 삽입
                                         </button>
@@ -596,10 +596,10 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                                 e.stopPropagation()
                                                 handleDeleteImage(idx)
                                             }}
-                                            className="absolute top-3 right-3 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg transform translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300"
+                                            className="absolute top-1.5 right-1.5 lg:top-3 lg:right-3 p-1 lg:p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg transform translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300"
                                             title="이미지 삭제"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
                                         </button>
