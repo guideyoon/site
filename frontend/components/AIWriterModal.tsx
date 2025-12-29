@@ -421,9 +421,9 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                         </div>
 
                         {/* Editors */}
-                        <div className="flex-1 flex flex-col p-4 overflow-hidden relative bg-white dark:bg-slate-950 transition-colors">
-                            <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 overflow-hidden">
-                                <div className="flex-1 flex flex-col group/original">
+                        <div className="flex-1 flex flex-col p-3 sm:p-4 overflow-hidden md:overflow-hidden relative bg-white dark:bg-slate-950 transition-colors">
+                            <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 overflow-y-auto md:overflow-hidden pr-1">
+                                <div className="flex-none md:flex-1 flex flex-col group/original min-h-[300px] md:min-h-0">
                                     <div className="flex justify-between items-center mb-1.5 px-1">
                                         <label className="text-sm font-bold text-gray-700 dark:text-gray-400 uppercase tracking-tight flex items-center gap-1.5">
                                             원본 내용
@@ -500,7 +500,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                     </div>
                                 </div>
 
-                                <div className="flex-1 flex flex-col">
+                                <div className="flex-none md:flex-1 flex flex-col min-h-[300px] md:min-h-0">
                                     <label className="text-sm font-bold text-purple-700 dark:text-purple-400 uppercase tracking-tight mb-1.5 px-1 flex items-center gap-1.5">
                                         <span className="relative flex h-2 w-2">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
@@ -540,7 +540,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                     </div>
 
                     {/* Image Gallery */}
-                    <div className="w-full lg:w-80 h-32 lg:h-auto bg-gray-50 dark:bg-slate-900/80 p-3 lg:p-5 border-t lg:border-t-0 lg:border-l dark:border-slate-800 overflow-y-auto transition-colors flex-shrink-0">
+                    <div className="w-full lg:w-80 bg-gray-50 dark:bg-slate-900/80 p-3 lg:p-5 border-t lg:border-t-0 lg:border-l dark:border-slate-800 overflow-y-auto transition-colors flex-shrink-0 max-h-[40vh] lg:max-h-none">
                         <div className="flex justify-between items-center mb-5">
                             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                 <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
