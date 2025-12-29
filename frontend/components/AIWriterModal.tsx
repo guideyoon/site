@@ -48,6 +48,9 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
 
     useEffect(() => {
         if (isOpen) {
+            // Prevent background scrolling
+            document.body.style.overflow = 'hidden'
+
             // Initial content population
             let initialContent = item.title + '\n\n'
             if (item.raw_text) initialContent += item.raw_text + '\n\n'
@@ -63,6 +66,13 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
 
             // Check for user settings (API Key)
             checkUserApiKeys()
+        } else {
+            // Restore background scrolling
+            document.body.style.overflow = 'unset'
+        }
+
+        return () => {
+            document.body.style.overflow = 'unset'
         }
     }, [isOpen, item])
 
