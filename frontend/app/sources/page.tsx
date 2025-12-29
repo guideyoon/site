@@ -213,7 +213,7 @@ export default function SourcesPage() {
 
             <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                 <div className="px-4 py-6 sm:px-0">
-                    <div className="flex justify-between items-center mb-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <div className="flex items-center space-x-4">
                             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">출처 관리</h2>
                             {refreshing && (
@@ -222,7 +222,7 @@ export default function SourcesPage() {
                         </div>
                         <button
                             onClick={() => setShowAddForm(!showAddForm)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition"
+                            className="w-full sm:w-auto px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition font-semibold"
                         >
                             {showAddForm ? '취소' : '+ 출처 추가'}
                         </button>
@@ -459,7 +459,7 @@ export default function SourcesPage() {
                             </div>
                         ) : (
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                                <thead className="bg-gray-50 dark:bg-slate-800">
+                                <thead className="bg-gray-50 dark:bg-slate-800 hidden md:table-header-group">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">출처 정보</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">구분</th>
@@ -469,8 +469,80 @@ export default function SourcesPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
+                                    {/* Mobile Card View */}
                                     {sources.map((source) => (
-                                        <tr key={source.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                                        <tr key={`mobile-${source.id}`} className="md:hidden">
+                                            <td colSpan={5} className="px-4 py-4">
+                                                <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-100 dark:border-slate-800">
+                                                    <div className="flex justify-between items-start mb-3">
+                                                        <div>
+                                                            <div className="text-base font-bold text-gray-900 dark:text-gray-100">{source.name}</div>
+                                                            <div className="text-xs text-blue-500 dark:text-blue-400 truncate max-w-[200px] mt-0.5">{source.base_url}</div>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => handleToggle(source.id, source.enabled)}
+                                                            className={`px-3 py-1 rounded-full text-xs font-bold shadow-sm transition ${source.enabled
+                                                                ? 'bg-green-500 text-white'
+                                                                : 'bg-red-500 text-white'
+                                                                }`}
+                                                        >
+                                                            {source.enabled ? 'ON' : 'OFF'}
+                                                        </button>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-3 mb-4">
+                                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${source.type === 'naver_blog'
+                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                                            }`}>
+                                                            {source.type === 'generic_board' ? '사이트' :
+                                                                source.type === 'naver_blog' ? '블로그' : source.type}
+                                                        </span>
+                                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                            주기: {source.collect_interval}분
+                                                        </span>
+                                                        {source.last_collected_at && (
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                수집: {getTimeAgo(source.last_collected_at)}
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="flex gap-2 pt-3 border-t border-gray-200 dark:border-slate-700/50">
+                                                        <button
+                                                            onClick={() => handleCollect(source)}
+                                                            disabled={collectingIds.has(source.id)}
+                                                            className="flex-1 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold disabled:opacity-50 flex items-center justify-center gap-1"
+                                                        >
+                                                            {collectingIds.has(source.id) && (
+                                                                <svg className="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                </svg>
+                                                            )}
+                                                            <span>수집 실행</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setEditingSource(source)}
+                                                            className="px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-800 dark:text-gray-200 rounded-lg text-sm font-bold"
+                                                        >
+                                                            수정
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(source.id, source.name)}
+                                                            className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg text-sm font-bold"
+                                                        >
+                                                            삭제
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+
+                                    {/* Desktop Table View */}
+                                    {sources.map((source) => (
+                                        <tr key={`desktop-${source.id}`} className="hidden md:table-row hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{source.name}</div>
                                                 <a href={source.base_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 dark:text-blue-400 hover:underline">

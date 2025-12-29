@@ -145,26 +145,26 @@ export default function ItemDetailPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-slate-950 transition-colors duration-300">
-            <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 mb-6 sticky top-0 z-50 transition-colors">
+            <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 mb-4 sm:mb-6 sticky top-0 z-50 transition-colors">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
+                    <div className="flex justify-between h-14 sm:h-16">
                         <div className="flex items-center">
-                            <a href="/items" className="text-blue-500 hover:underline">← 목록으로</a>
+                            <a href="/items" className="text-blue-500 hover:underline text-sm sm:text-base font-medium">← 목록으로 돌아가기</a>
                         </div>
                     </div>
                 </div>
             </nav>
 
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-6 mb-6 border border-transparent dark:border-slate-800 transition-colors">
-                    <div className="flex justify-between items-start mb-4">
-                        <h1 className="text-2xl font-bold">항목 상세</h1>
-                        <div className="space-x-2 flex">
+                <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-4 sm:p-6 mb-6 border border-transparent dark:border-slate-800 transition-colors">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">항목 상세 정보</h1>
+                        <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
                             {!editing ? (
                                 <>
                                     <button
                                         onClick={() => setEditing(true)}
-                                        className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600"
+                                        className="px-3 sm:px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs sm:text-sm"
                                     >
                                         수정
                                     </button>
@@ -173,37 +173,36 @@ export default function ItemDetailPage() {
                                             setModalMode('blog')
                                             setShowModal(true)
                                         }}
-                                        className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium flex items-center gap-1 sm:gap-2 whitespace-nowrap text-xs sm:text-base"
+                                        className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold flex items-center justify-center gap-1 sm:gap-2 whitespace-nowrap text-xs sm:text-sm shadow-md shadow-blue-500/20"
                                     >
-                                        <span>📝</span> <span className="hidden sm:inline">글 편집</span><span className="sm:hidden">편집</span>
+                                        <span>📝</span> <span>글 편집</span>
                                     </button>
                                 </>
                             ) : (
                                 <>
                                     <button
                                         onClick={() => setEditing(false)}
-                                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
+                                        className="px-3 sm:px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 font-medium text-xs sm:text-sm"
                                     >
                                         취소
                                     </button>
                                     <button
                                         onClick={handleSave}
-                                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                                        className="px-3 sm:px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 font-bold text-xs sm:text-sm"
                                     >
                                         저장
                                     </button>
                                 </>
                             )}
-                            {/* New buttons from snippet, keeping them but they are not part of original functionality */}
                             <button
                                 onClick={handleExport}
-                                className="px-3 sm:px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-700 rounded-md hover:bg-gray-50 dark:hover:bg-slate-700 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
+                                className="px-3 sm:px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-700 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
                             >
-                                <span className="hidden sm:inline">내용 복사</span><span className="sm:hidden">복사</span>
+                                본문 복사
                             </button>
                             <button
                                 onClick={handleDeleteItem}
-                                className="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap"
+                                className="px-3 sm:px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 text-xs sm:text-sm font-bold transition-colors whitespace-nowrap"
                             >
                                 삭제
                             </button>
@@ -211,27 +210,26 @@ export default function ItemDetailPage() {
                     </div>
 
                     <div className="bg-white dark:bg-slate-900 rounded-lg shadow-lg overflow-hidden border border-transparent dark:border-slate-800 transition-colors">
-                        <div className="p-8">
-                            <div className="flex justify-between items-start mb-6">
-                                <div className="flex-1">
-                                    {/* Original title and summary editing logic */}
+                        <div className="p-4 sm:p-8">
+                            <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
+                                <div className="flex-1 min-w-0">
                                     {editing ? (
                                         <input
                                             type="text"
                                             value={editTitle}
                                             onChange={(e) => setEditTitle(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-black dark:bg-slate-700 dark:text-gray-100 dark:border-slate-600"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-black dark:bg-slate-800 dark:text-gray-100 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none"
                                         />
                                     ) : (
-                                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{item.title}</h1>
+                                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 leading-tight">{item.title}</h1>
                                     )}
-                                    <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                                        {/* Assuming source_name is not available, using item.url for source */}
+                                    <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                         <span className="flex items-center">
-                                            <span className="font-semibold text-gray-700 dark:text-gray-300 mr-1">출처:</span> {item.url.split('/')[2]}
+                                            <span className="font-semibold text-gray-700 dark:text-gray-300 mr-1.5">출처:</span> {item.url.split('/')[2]}
                                         </span>
+                                        <span className="hidden sm:inline text-gray-300 dark:text-slate-700">|</span>
                                         <span className="flex items-center">
-                                            <span className="font-semibold text-gray-700 dark:text-gray-300 mr-1">수집일:</span> {new Date(item.collected_at).toLocaleDateString('ko-KR')}
+                                            <span className="font-semibold text-gray-700 dark:text-gray-300 mr-1.5">수집일:</span> {new Date(item.collected_at).toLocaleDateString('ko-KR')}
                                         </span>
                                     </div>
                                 </div>
@@ -239,9 +237,9 @@ export default function ItemDetailPage() {
                                     href={item.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 text-sm font-bold transition-colors"
+                                    className="w-full sm:w-auto px-6 py-2.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40 text-sm font-bold transition-all text-center border border-blue-100 dark:border-blue-900/30 shadow-sm"
                                 >
-                                    원문 보기
+                                    원문 링크로 이동
                                 </a>
                             </div>
 
@@ -299,7 +297,7 @@ export default function ItemDetailPage() {
                 {/* Images Gallery & Download */}
                 {item.image_urls && item.image_urls.length > 0 && (
                     <div className="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-6 mb-6 border border-transparent dark:border-slate-800 transition-colors mt-6">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white underline decoration-blue-500 decoration-2 underline-offset-4">수집된 이미지 ({item.image_urls.length})</h2>
                             <button
                                 onClick={() => {
@@ -318,7 +316,7 @@ export default function ItemDetailPage() {
                                         }, index * 500);
                                     });
                                 }}
-                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium flex items-center gap-2 shadow-md transition-all active:scale-95"
+                                className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
                             >
                                 <span>📥</span> 전체 이미지 다운로드
                             </button>
