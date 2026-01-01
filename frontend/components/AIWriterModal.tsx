@@ -46,6 +46,29 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const rewrittenTextareaRef = useRef<HTMLTextAreaElement>(null)
 
+    const getProxyUrl = (url: string) => {
+        if (!url) return '';
+        if (url.includes('cdninstagram.com')) {
+            return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://www.threads.net/`;
+        }
+        if (url.includes('pstatic.net') || url.includes('naver.com')) {
+            return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://m.blog.naver.com/`;
+        }
+        return url;
+    }
+
+    const maskProxyUrls = (html: string) => {
+        if (!html) return '';
+        // Look for <img src="..."> and replace with proxy if needed
+        return html.replace(/<img\s+[^>]*src="([^"]+)"[^>]*>/g, (match, src) => {
+            const proxyUrl = getProxyUrl(src);
+            if (proxyUrl !== src) {
+                return match.replace(src, proxyUrl);
+            }
+            return match;
+        });
+    }
+
     useEffect(() => {
         if (isOpen) {
             // Prevent background scrolling
@@ -462,7 +485,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                         <div className="relative flex-1 group/original">
                                             <div
                                                 className={`h-full w-full p-5 border dark:border-slate-800 rounded-xl overflow-y-auto prose dark:prose-invert max-w-none shadow-sm transition-colors ${isOriginalLocked ? 'bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-gray-400' : 'bg-white dark:bg-slate-900'}`}
-                                                dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br/>') }}
+                                                dangerouslySetInnerHTML={{ __html: maskProxyUrls(content.replace(/\n/g, '<br/>')) }}
                                             />
                                             {isOriginalLocked && (
                                                 <div className="absolute top-2 right-2 pointer-events-none opacity-20 group-hover/original:opacity-40 transition-opacity">
@@ -521,7 +544,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                     {previewMode ? (
                                         <div
                                             className="flex-1 w-full p-5 border dark:border-slate-800 rounded-xl overflow-y-auto bg-gray-50 dark:bg-slate-900 prose dark:prose-invert max-w-none shadow-inner border-purple-100 dark:border-purple-900/30 transition-colors"
-                                            dangerouslySetInnerHTML={{ __html: rewrittenContent.replace(/\n/g, '<br/>') }}
+                                            dangerouslySetInnerHTML={{ __html: maskProxyUrls(rewrittenContent.replace(/\n/g, '<br/>')) }}
                                         />
                                     ) : (
                                         <div className="relative flex-1 min-h-[200px]">
@@ -590,7 +613,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                             {images.map((img, idx) => (
                                 <div key={idx} className="group relative bg-white dark:bg-slate-800 p-2 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all overflow-hidden w-40 lg:w-full flex-shrink-0 animate-in zoom-in-95 duration-200">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={img.url} alt={`Img ${idx}`} className="w-full aspect-video object-cover rounded-lg" />
+                                    <img src={getProxyUrl(img.url)} alt={`Img ${idx}`} className="w-full aspect-video object-cover rounded-lg" />
 
                                     {/* Overlay Actions */}
                                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 gap-2 p-2">
