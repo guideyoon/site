@@ -69,3 +69,8 @@ celerybeat-schedule
 celerybeat-schedule.dat
 celerybeat-schedule.bak
 celerybeat-schedule.dir
+
+# Threads Debug
+threads_*.html
+threads_*.json
+backend/logs.txt
