@@ -246,6 +246,10 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
             return `${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://m.blog.naver.com/`;
         }
+        if (source_type === 'threads' || url.includes('cdninstagram.com')) {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
+            return `${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://www.threads.net/`;
+        }
         return url;
     };
 

@@ -197,6 +197,8 @@ async def download_proxy(
                 referer = "https://m.blog.naver.com/"
             elif "ulsan.go.kr" in url:
                 referer = "https://www.ulsan.go.kr/"
+            elif "cdninstagram.com" in url:
+                referer = "https://www.threads.net/"
 
         # Handle Ulsan HHBbs links
         if "HHBbs.EncDownFile" in url:
