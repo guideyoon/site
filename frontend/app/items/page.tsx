@@ -205,8 +205,7 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
     const handleDownload = async (url: string, filename?: string) => {
         try {
             const token = localStorage.getItem('token')
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
-            const response = await fetch(`${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}${filename ? `&filename=${encodeURIComponent(filename)}` : ''}`, {
+            const response = await fetch(`/api/items/download-proxy?url=${encodeURIComponent(url)}${filename ? `&filename=${encodeURIComponent(filename)}` : ''}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -243,12 +242,10 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
     const getProxyUrl = (url: string, source_type: string) => {
         if (!url) return '';
         if (source_type === 'naver_blog' || url.includes('pstatic.net') || url.includes('naver.com')) {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
-            return `${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://m.blog.naver.com/`;
+            return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://m.blog.naver.com/`;
         }
         if (source_type === 'threads' || url.includes('cdninstagram.com')) {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001';
-            return `${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://www.threads.net/`;
+            return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://www.threads.net/`;
         }
         return url;
     };

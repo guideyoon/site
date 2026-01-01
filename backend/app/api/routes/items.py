@@ -215,6 +215,9 @@ async def download_proxy(
         
         logger.info(f"Proxying: {url} (Referer: {referer}, Download: {is_download})")
         
+        # Threads images specifically often like no referer or specific referer
+        # If referer is provided from query, we use it.
+        
         # Add a proper User-Agent and Referer to avoid being blocked
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -234,6 +237,7 @@ async def download_proxy(
                 response = session.get(url, stream=True, timeout=15, headers=headers, verify=False)
 
         response.raise_for_status()
+        logger.info(f"Proxy SUCCESS for {url}: {response.status_code}, Type: {response.headers.get('Content-Type')}")
         
         # Determine filename if not provided (needed for media_type or logs)
         if not filename:

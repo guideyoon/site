@@ -124,6 +124,20 @@ export default function ItemDetailPage() {
     const categories = ['행사', '공지', '채용', '지원사업', '안전', '교통', '문화', '축제', '복지', '교육', '환경', '산업']
     const regions = ['울산 전체', '중구', '남구', '동구', '북구', '울주군']
 
+    const getProxyUrl = (url: string) => {
+        if (!url) return '';
+        // If it's a Threads image, use the backend proxy
+        if (url.includes('cdninstagram.com')) {
+            // Use relative path for Next.js rewrite support in browser
+            return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://www.threads.net/`;
+        }
+        // If it's a Naver image, use the backend proxy
+        if (url.includes('pstatic.net') || url.includes('naver.com')) {
+            return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://m.blog.naver.com/`;
+        }
+        return url;
+    }
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-100 dark:bg-slate-950 flex items-center justify-center transition-colors">
@@ -303,9 +317,8 @@ export default function ItemDetailPage() {
                                 onClick={() => {
                                     item.image_urls?.forEach((url, index) => {
                                         setTimeout(() => {
-                                            const apiUrl = typeof window !== 'undefined' ? `http://${window.location.hostname}:8001` : 'http://localhost:8001';
                                             const filename = `image_${item.id}_${index + 1}.jpg`;
-                                            const downloadUrl = `${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}&filename=${filename}`;
+                                            const downloadUrl = `/api/items/download-proxy?url=${encodeURIComponent(url)}&filename=${filename}`;
 
                                             const link = document.createElement('a');
                                             link.href = downloadUrl;
@@ -326,7 +339,7 @@ export default function ItemDetailPage() {
                                 <div key={idx} className="group relative bg-gray-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
                                     <div className="aspect-square relative flex items-center justify-center bg-white dark:bg-slate-900 overflow-hidden">
                                         <img
-                                            src={url}
+                                            src={getProxyUrl(url)}
                                             alt={`수집 이미지 ${idx + 1}`}
                                             className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                                             onError={(e) => {
@@ -337,9 +350,8 @@ export default function ItemDetailPage() {
                                     <div className="p-3 flex justify-center bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800">
                                         <button
                                             onClick={() => {
-                                                const apiUrl = typeof window !== 'undefined' ? `http://${window.location.hostname}:8001` : 'http://localhost:8001';
                                                 const filename = `image_${item.id}_${idx + 1}.jpg`;
-                                                const downloadUrl = `${apiUrl}/api/items/download-proxy?url=${encodeURIComponent(url)}&filename=${filename}`;
+                                                const downloadUrl = `/api/items/download-proxy?url=${encodeURIComponent(url)}&filename=${filename}`;
 
                                                 const link = document.createElement('a');
                                                 link.href = downloadUrl;
