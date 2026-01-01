@@ -20,8 +20,18 @@ class ThreadsConnector(ConnectorBase):
         """Fetch list of items from Threads profile"""
         try:
             url = self.base_url
+            # Normalize threads.com to threads.net (Threads domain transition)
+            url = url.replace('threads.com', 'threads.net')
+            
+            # Ensure it starts with https://www.threads.net/@
             if not url.startswith('http'):
                 url = f"https://www.threads.net/@{url.lstrip('@')}"
+            elif 'threads.net' in url and '@' not in url.split('/')[-1]:
+                # If it's something like https://www.threads.net/user, add @
+                parts = url.rstrip('/').split('/')
+                if not parts[-1].startswith('@'):
+                    parts[-1] = f"@{parts[-1]}"
+                    url = "/".join(parts)
 
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -147,7 +157,8 @@ class ThreadsConnector(ConnectorBase):
                 
                 # Timestamp
                 taken_at = post.get('taken_at')
-                published_at = datetime.fromtimestamp(taken_at) if isinstance(taken_at, (int, float)) else None
+                from datetime import timezone
+                published_at = datetime.fromtimestamp(taken_at, tz=timezone.utc) if isinstance(taken_at, (int, float)) else None
                 
                 # Images
                 image_urls = []
