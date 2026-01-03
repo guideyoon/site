@@ -342,208 +342,209 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                     )}
 
                     {/* Items Table */}
-                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow border border-transparent dark:border-slate-800 transition-colors">
-                        {loading && items.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400 dark:text-gray-500">항목을 불러오는 중...</div>
-                        ) : items.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                                수집된 항목이 없습니다.
-                                <br />
-                                <Link href="/sources" className="text-blue-500 hover:underline mt-2 inline-block">
-                                    출처를 추가하고 수집을 시작하세요
-                                </Link>
-                            </div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                                    <thead className="bg-gray-50 dark:bg-slate-900 hidden md:table-header-group">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left sticky top-32 bg-gray-50 dark:bg-slate-900 z-10">
+
+                    {loading && items.length === 0 ? (
+                        <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-8 text-center text-gray-400 dark:text-gray-500">항목을 불러오는 중...</div>
+                    ) : items.length === 0 ? (
+                        <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-8 text-center text-gray-500 dark:text-gray-400">
+                            수집된 항목이 없습니다.
+                            <br />
+                            <Link href="/sources" className="text-blue-500 hover:underline mt-2 inline-block">
+                                출처를 추가하고 수집을 시작하세요
+                            </Link>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Mobile Card View */}
+                            <div className="md:hidden space-y-4 mb-6">
+                                {items.map((item) => (
+                                    <div key={`mobile-${item.id}`} className={`p-4 rounded-xl border ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : 'bg-white dark:bg-slate-900 border-gray-100 dark:border-slate-800'} transition-all shadow-sm`}>
+                                        <div className="flex gap-4">
+                                            <div className="flex-shrink-0">
                                                 <input
                                                     type="checkbox"
-                                                    className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"
-                                                    checked={items.length > 0 && selectedIds.size === items.length}
-                                                    onChange={toggleSelectAll}
+                                                    className="w-5 h-5 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 mt-1"
+                                                    checked={selectedIds.has(item.id)}
+                                                    onChange={() => toggleSelectItem(item.id)}
                                                 />
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden lg:table-cell sticky top-32 bg-gray-50 dark:bg-slate-900 z-10">
-                                                게시일
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-32 bg-gray-50 dark:bg-slate-900 z-10">
-                                                썸네일
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-32 bg-gray-50 dark:bg-slate-900 z-10">
-                                                제목
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell sticky top-32 bg-gray-50 dark:bg-slate-900 z-10">
-                                                출처
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden xl:table-cell sticky top-32 bg-gray-50 dark:bg-slate-900 z-10">
-                                                구분
-                                            </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-32 bg-gray-50 dark:bg-slate-900 z-10">
-                                                작업
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
-                                        {/* Mobile Card View */}
-                                        {items.map((item) => (
-                                            <tr key={`mobile-${item.id}`} className="md:hidden">
-                                                <td colSpan={7} className="px-4 py-4">
-                                                    <div className={`p-4 rounded-xl border ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' : 'bg-gray-50 dark:bg-slate-800/30 border-gray-100 dark:border-slate-800'} transition-all`}>
-                                                        <div className="flex gap-4">
-                                                            <div className="flex-shrink-0">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    className="w-5 h-5 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 mt-1"
-                                                                    checked={selectedIds.has(item.id)}
-                                                                    onChange={() => toggleSelectItem(item.id)}
-                                                                />
+                                            </div>
+                                            <div className="flex-grow min-w-0">
+                                                <div className="flex gap-3 mb-3">
+                                                    <div className="relative w-20 h-16 bg-gray-200 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600 flex-shrink-0">
+                                                        {item.thumbnail_url ? (
+                                                            <img
+                                                                src={getProxyUrl(item.thumbnail_url, item.source_type)}
+                                                                alt=""
+                                                                className="w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80x64?text=No+Img';
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-500">
+                                                                No Img
                                                             </div>
-                                                            <div className="flex-grow min-w-0">
-                                                                <div className="flex gap-3 mb-3">
-                                                                    <div className="relative w-20 h-16 bg-gray-200 dark:bg-slate-700 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600 flex-shrink-0">
-                                                                        {item.thumbnail_url ? (
-                                                                            <img
-                                                                                src={getProxyUrl(item.thumbnail_url, item.source_type)}
-                                                                                alt=""
-                                                                                className="w-full h-full object-cover"
-                                                                                onError={(e) => {
-                                                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/80x64?text=No+Img';
-                                                                                }}
-                                                                            />
-                                                                        ) : (
-                                                                            <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-500">
-                                                                                No Img
-                                                                            </div>
-                                                                        )}
-                                                                        {item.image_urls && item.image_urls.length > 0 && (
-                                                                            <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1 rounded flex items-center">
-                                                                                📷 {item.image_urls.length}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="flex-grow min-w-0">
-                                                                        <div className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight mb-1">
-                                                                            {item.title}
-                                                                        </div>
-                                                                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                                                            <span className="truncate max-w-[100px]">{item.source_name}</span>
-                                                                            <span>•</span>
-                                                                            <span>{item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) : '-'}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-slate-700/50 mt-1">
-                                                                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${item.source_type === 'naver_blog'
-                                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                                                        : item.source_type === 'threads'
-                                                                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
-                                                                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                                                                        }`}>
-                                                                        {item.source_type === 'naver_blog' ? '블로그' :
-                                                                            item.source_type === 'threads' ? 'Threads' : '사이트'}
-                                                                    </span>
-                                                                    <div className="flex gap-4">
-                                                                        <Link
-                                                                            href={`/items/${item.id}`}
-                                                                            className="text-sm font-bold text-blue-600 dark:text-blue-400"
-                                                                        >
-                                                                            상세보기
-                                                                        </Link>
-                                                                        <button
-                                                                            onClick={() => handleDeleteItem(item.id)}
-                                                                            className="text-sm font-bold text-red-600 dark:text-red-400"
-                                                                        >
-                                                                            삭제
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
-
-                                        {/* Desktop Table View */}
-                                        {items.map((item) => (
-                                            <tr key={`desktop-${item.id}`} className={`hidden md:table-row hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
-                                                <td className="px-6 py-4">
-                                                    <input
-                                                        type="checkbox"
-                                                        className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"
-                                                        checked={selectedIds.has(item.id)}
-                                                        onChange={() => toggleSelectItem(item.id)}
-                                                    />
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
-                                                    {item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR') : '-'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="relative w-16 h-12 bg-gray-100 dark:bg-slate-800 rounded overflow-hidden border border-gray-200 dark:border-slate-700">
-                                                            {item.thumbnail_url ? (
-                                                                <img
-                                                                    src={getProxyUrl(item.thumbnail_url, item.source_type)}
-                                                                    alt=""
-                                                                    className="w-full h-full object-cover"
-                                                                    onError={(e) => {
-                                                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64x48?text=No+Img';
-                                                                    }}
-                                                                />
-                                                            ) : (
-                                                                <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-500">
-                                                                    No Img
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        )}
                                                         {item.image_urls && item.image_urls.length > 0 && (
-                                                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-full" title={`이미지 ${item.image_urls.length}개`}>
+                                                            <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1 rounded flex items-center">
                                                                 📷 {item.image_urls.length}
-                                                            </span>
+                                                            </div>
                                                         )}
                                                     </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{item.title}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
-                                                    {item.source_name}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap hidden xl:table-cell">
-                                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.source_type === 'naver_blog'
-                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                                                    <div className="flex-grow min-w-0">
+                                                        <div className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight mb-1">
+                                                            {item.title}
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                            <span className="truncate max-w-[100px]">{item.source_name}</span>
+                                                            <span>•</span>
+                                                            <span>{item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }) : '-'}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-slate-700/50 mt-1">
+                                                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${item.source_type === 'naver_blog'
+                                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                                         : item.source_type === 'threads'
-                                                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
-                                                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                                                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                                                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                                                         }`}>
                                                         {item.source_type === 'naver_blog' ? '블로그' :
                                                             item.source_type === 'threads' ? 'Threads' : '사이트'}
                                                     </span>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                                                    <Link
-                                                        href={`/items/${item.id}`}
-                                                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition-colors"
-                                                    >
-                                                        상세보기
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => handleDeleteItem(item.id)}
-                                                        className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition-colors"
-                                                    >
-                                                        삭제
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                                    <div className="flex gap-4">
+                                                        <Link
+                                                            href={`/items/${item.id}`}
+                                                            className="text-sm font-bold text-blue-600 dark:text-blue-400"
+                                                        >
+                                                            상세보기
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleDeleteItem(item.id)}
+                                                            className="text-sm font-bold text-red-600 dark:text-red-400"
+                                                        >
+                                                            삭제
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        )}
-                    </div>
+
+                            {/* Desktop Table View */}
+                            <div className="hidden md:block bg-white dark:bg-slate-900 rounded-lg shadow border border-transparent dark:border-slate-800 transition-colors">
+                                <div className="overflow-x-auto rounded-lg">
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
+                                        <thead className="bg-gray-50 dark:bg-slate-900 z-40">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left sticky top-[128px] bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"
+                                                        checked={items.length > 0 && selectedIds.size === items.length}
+                                                        onChange={toggleSelectAll}
+                                                    />
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden lg:table-cell sticky top-[128px] bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                    게시일
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-[128px] bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                    썸네일
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-[128px] bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                    제목
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell sticky top-[128px] bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                    출처
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden xl:table-cell sticky top-[128px] bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                    구분
+                                                </th>
+                                                <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-[128px] bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                    작업
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
+                                            {items.map((item) => (
+                                                <tr key={`desktop-${item.id}`} className={`hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                                                    <td className="px-6 py-4">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"
+                                                            checked={selectedIds.has(item.id)}
+                                                            onChange={() => toggleSelectItem(item.id)}
+                                                        />
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden lg:table-cell">
+                                                        {item.published_at ? new Date(item.published_at).toLocaleDateString('ko-KR') : '-'}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="relative w-16 h-12 bg-gray-100 dark:bg-slate-800 rounded overflow-hidden border border-gray-200 dark:border-slate-700">
+                                                                {item.thumbnail_url ? (
+                                                                    <img
+                                                                        src={getProxyUrl(item.thumbnail_url, item.source_type)}
+                                                                        alt=""
+                                                                        className="w-full h-full object-cover"
+                                                                        onError={(e) => {
+                                                                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/64x48?text=No+Img';
+                                                                        }}
+                                                                    />
+                                                                ) : (
+                                                                    <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400 dark:text-gray-500">
+                                                                        No Img
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            {item.image_urls && item.image_urls.length > 0 && (
+                                                                <span className="text-xs text-gray-500 dark:text-gray-400 font-medium flex items-center bg-gray-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-full" title={`이미지 ${item.image_urls.length}개`}>
+                                                                    📷 {item.image_urls.length}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{item.title}</div>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
+                                                        {item.source_name}
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap hidden xl:table-cell">
+                                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.source_type === 'naver_blog'
+                                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                                                            : item.source_type === 'threads'
+                                                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
+                                                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                                                            }`}>
+                                                            {item.source_type === 'naver_blog' ? '블로그' :
+                                                                item.source_type === 'threads' ? 'Threads' : '사이트'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                                        <Link
+                                                            href={`/items/${item.id}`}
+                                                            className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition-colors"
+                                                        >
+                                                            상세보기
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleDeleteItem(item.id)}
+                                                            className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 transition-colors"
+                                                        >
+                                                            삭제
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                     <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
                         총 {items.length}개의 항목

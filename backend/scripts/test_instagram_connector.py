@@ -1,6 +1,10 @@
 import sys
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 # Add backend to path
 sys.path.append(str(Path(__file__).parent.parent))
@@ -15,6 +19,11 @@ class MockSource:
         self.crawl_policy = "{}"
 
 def test_instagram():
+    session_id = os.getenv('INSTAGRAM_SESSION_ID')
+    print(f"Session ID loaded: {'Yes' if session_id else 'No'}")
+    if session_id:
+        print(f"Session ID prefix: {session_id[:5]}...")
+
     profile_url = "https://www.instagram.com/ulsaninsta/" 
     source = MockSource(profile_url)
     connector = InstagramConnector(source)

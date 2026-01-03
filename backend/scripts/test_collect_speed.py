@@ -4,14 +4,18 @@ import time
 BASE_URL = "http://localhost:8000/api"
 
 def login():
-    resp = requests.post(f"{BASE_URL}/auth/login", data={"username": "admin", "password": "admin"})
+    resp = requests.post(f"{BASE_URL}/auth/login", data={"username": "admin", "password": "admin123"})
+    if resp.status_code != 200:
+        print(f"Login failed: {resp.status_code}")
+        print(f"Response: {resp.text}")
+        resp.raise_for_status()
     return resp.json()["access_token"]
 
 def test_collect():
     token = login()
     headers = {"Authorization": f"Bearer {token}"}
     
-    # Get first source
+    # Get sources
     resp = requests.get(f"{BASE_URL}/sources", headers=headers)
     sources = resp.json()
     if not sources:

@@ -4,7 +4,7 @@ import hashlib
 from sqlalchemy import create_engine, text
 
 # Database URLs
-SQLITE_URL = "sqlite:///backend/navercafe.db"
+SQLITE_URL = "sqlite:///navercafe.db"
 POSTGRES_URL = "postgresql://navercafe:navercafe123@localhost:5432/navercafe"
 
 def get_password_hash(password: str) -> str:

@@ -152,9 +152,9 @@ export default function QueuePage() {
 
                     <div className="bg-white rounded-lg shadow">
                         {loading && queueItems.length === 0 ? (
-                            <div className="p-8 text-center text-gray-400">대기열을 불러오는 중...</div>
+                            <div className="p-8 text-center text-gray-400 bg-white rounded-lg shadow border border-gray-200">대기열을 불러오는 중...</div>
                         ) : queueItems.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">
+                            <div className="p-8 text-center text-gray-500 bg-white rounded-lg shadow border border-gray-200">
                                 대기 중인 항목이 없습니다.
                                 <br />
                                 <a href="/items" className="text-blue-500 hover:underline mt-2 inline-block">
@@ -162,82 +162,156 @@ export default function QueuePage() {
                                 </a>
                             </div>
                         ) : (
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50 sticky top-16 z-10">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-10">
-                                            제목
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-10">
-                                            카테고리
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-10">
-                                            상태
-                                        </th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-10">
-                                            작업
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                            <>
+                                {/* Mobile Card View */}
+                                <div className="md:hidden space-y-4 mb-6">
                                     {queueItems.map((item) => (
-                                        <tr key={item.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    <a href={`/items/${item.item_id}`} className="text-blue-500 hover:underline">
-                                                        {item.item_title}
-                                                    </a>
+                                        <div key={`mobile-${item.id}`} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="flex-1 min-w-0 pr-2">
+                                                    <div className="text-base font-bold text-gray-900 truncate">
+                                                        <a href={`/items/${item.item_id}`} className="hover:text-blue-500 transition-colors">
+                                                            {item.item_title}
+                                                        </a>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-100 text-blue-800">
+                                                            {item.item_category || '미분류'}
+                                                        </span>
+                                                        {item.approved_at ? (
+                                                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-green-100 text-green-800">
+                                                                승인됨
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-yellow-100 text-yellow-800">
+                                                                대기중
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                {item.note_editor && (
-                                                    <div className="text-xs text-gray-500 mt-1">메모: {item.note_editor}</div>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                    {item.item_category || '-'}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {item.approved_at ? (
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        승인됨
-                                                    </span>
-                                                ) : (
-                                                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                        대기중
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 text-right text-sm font-medium space-x-2">
-                                                {!item.approved_at && (
+                                            </div>
+
+                                            {item.note_editor && (
+                                                <div className="text-sm text-gray-600 bg-gray-50 rounded p-2 mb-3 mt-2 border-l-2 border-blue-400">
+                                                    <span className="font-semibold text-xs text-gray-400 block mb-1">EDITOR NOTE</span>
+                                                    {item.note_editor}
+                                                </div>
+                                            )}
+
+                                            <div className="flex gap-2 pt-3 border-t border-gray-100">
+                                                {!item.approved_at ? (
                                                     <>
                                                         <button
                                                             onClick={() => openNoteModal(item.id, 'approve')}
-                                                            className="text-green-600 hover:text-green-900"
+                                                            className="flex-1 py-2 bg-green-600 text-white rounded-lg text-sm font-bold shadow-sm active:scale-95 transition-transform"
                                                         >
                                                             승인
                                                         </button>
                                                         <button
                                                             onClick={() => openNoteModal(item.id, 'reject')}
-                                                            className="text-red-600 hover:text-red-900"
+                                                            className="flex-1 py-2 bg-red-100 text-red-600 rounded-lg text-sm font-bold active:scale-95 transition-transform"
                                                         >
                                                             반려
                                                         </button>
                                                     </>
-                                                )}
-                                                {item.approved_at && (
+                                                ) : (
                                                     <button
                                                         onClick={() => viewExport(item.id)}
-                                                        className="text-blue-600 hover:text-blue-900"
+                                                        className="w-full py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-sm"
                                                     >
-                                                        내보내기
+                                                        내보내기 정보 보기
                                                     </button>
                                                 )}
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </div>
                                     ))}
-                                </tbody>
-                            </table>
+                                </div>
+
+                                {/* Desktop Table View */}
+                                <div className="hidden md:block bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                        제목
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                        카테고리
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                        상태
+                                                    </th>
+                                                    <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                        작업
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {queueItems.map((item) => (
+                                                    <tr key={`desktop-${item.id}`} className="hover:bg-gray-50/50 transition-colors">
+                                                        <td className="px-6 py-4">
+                                                            <div className="text-sm font-semibold text-gray-900">
+                                                                <a href={`/items/${item.item_id}`} className="text-blue-600 hover:underline">
+                                                                    {item.item_title}
+                                                                </a>
+                                                            </div>
+                                                            {item.note_editor && (
+                                                                <div className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                                                    <span className="font-bold text-blue-500 bg-blue-50 px-1 rounded">NOTE</span>
+                                                                    {item.note_editor}
+                                                                </div>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-700">
+                                                                {item.item_category || '-'}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            {item.approved_at ? (
+                                                                <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-50 text-green-700">
+                                                                    승인됨
+                                                                </span>
+                                                            ) : (
+                                                                <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-50 text-yellow-700">
+                                                                    대기중
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right text-sm font-medium space-x-3">
+                                                            {!item.approved_at && (
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => openNoteModal(item.id, 'approve')}
+                                                                        className="text-green-600 hover:text-green-800 font-bold transition-colors"
+                                                                    >
+                                                                        승인
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => openNoteModal(item.id, 'reject')}
+                                                                        className="text-red-500 hover:text-red-700 font-medium transition-colors"
+                                                                    >
+                                                                        반려
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                            {item.approved_at && (
+                                                                <button
+                                                                    onClick={() => viewExport(item.id)}
+                                                                    className="text-blue-600 hover:text-blue-800 font-bold transition-colors"
+                                                                >
+                                                                    내보내기
+                                                                </button>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </>
                         )}
                     </div>
 

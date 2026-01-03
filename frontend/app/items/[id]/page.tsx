@@ -159,7 +159,7 @@ export default function ItemDetailPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-slate-950 transition-colors duration-300">
-            <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 mb-4 sm:mb-6 sticky top-0 z-50 transition-colors">
+            <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 mb-4 sm:mb-6 sticky top-16 z-50 transition-colors">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-14 sm:h-16">
                         <div className="flex items-center">
