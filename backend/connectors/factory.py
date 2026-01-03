@@ -2,6 +2,8 @@ from connectors.base import ConnectorBase
 from connectors.implementations.generic_board import GenericBoardConnector
 from connectors.implementations.naver_blog import NaverBlogConnector
 from connectors.implementations.threads import ThreadsConnector
+from connectors.implementations.instagram import InstagramConnector
+from connectors.implementations.x import XConnector
 from app.models.source import Source
 import logging
 
@@ -22,6 +24,8 @@ def get_connector(source: Source) -> ConnectorBase:
         "generic_board": GenericBoardConnector,
         "naver_blog": NaverBlogConnector,
         "threads": ThreadsConnector,
+        "instagram": InstagramConnector,
+        "x": XConnector,
         # Add more connector types as needed
         # "ulsan_city_hall": UlsanCityHallConnector,
         # "ulsan_culture": UlsanCultureConnector,
