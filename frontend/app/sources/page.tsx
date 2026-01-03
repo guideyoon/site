@@ -454,7 +454,7 @@ export default function SourcesPage() {
                     )}
 
                     {/* Sources List */}
-                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow overflow-hidden border border-gray-200 dark:border-slate-800">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-800">
                         {loading && sources.length === 0 ? (
                             <div className="p-8 text-center text-gray-400 dark:text-gray-500">출처 목록을 로딩 중...</div>
                         ) : sources.length === 0 ? (
@@ -465,13 +465,13 @@ export default function SourcesPage() {
                             </div>
                         ) : (
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                                <thead className="bg-gray-50 dark:bg-slate-800 hidden md:table-header-group">
+                                <thead className="bg-gray-50 dark:bg-slate-800 hidden md:table-header-group sticky top-16 z-40">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">출처 정보</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">구분</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">수집 주기</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">상태</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">관리</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">출처 정보</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">구분</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">수집 주기</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">상태</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">관리</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">

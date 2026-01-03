@@ -150,7 +150,7 @@ export default function QueuePage() {
                         </div>
                     )}
 
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="bg-white rounded-lg shadow">
                         {loading && queueItems.length === 0 ? (
                             <div className="p-8 text-center text-gray-400">대기열을 불러오는 중...</div>
                         ) : queueItems.length === 0 ? (
@@ -163,18 +163,18 @@ export default function QueuePage() {
                             </div>
                         ) : (
                             <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-gray-50 sticky top-16 z-10">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50">
                                             제목
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50">
                                             카테고리
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50">
                                             상태
                                         </th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50">
                                             작업
                                         </th>
                                     </tr>

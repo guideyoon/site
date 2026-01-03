@@ -282,7 +282,7 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                     </div>
 
                     {/* Filters */}
-                    <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 mb-4 sm:mb-6 sticky top-0 z-50 transition-colors">
+                    <nav className="bg-white dark:bg-slate-900 shadow-sm border-b border-transparent dark:border-slate-800 mb-4 sm:mb-6 sticky top-16 z-50 transition-colors">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div className="flex justify-between h-14 sm:h-16">
                                 <div className="flex items-center">
@@ -342,7 +342,7 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                     )}
 
                     {/* Items Table */}
-                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow overflow-hidden border border-transparent dark:border-slate-800 transition-colors">
+                    <div className="bg-white dark:bg-slate-900 rounded-lg shadow border border-transparent dark:border-slate-800 transition-colors">
                         {loading && items.length === 0 ? (
                             <div className="p-8 text-center text-gray-400 dark:text-gray-500">항목을 불러오는 중...</div>
                         ) : items.length === 0 ? (
@@ -356,9 +356,9 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                                    <thead className="bg-gray-50 dark:bg-slate-800/50 hidden md:table-header-group">
+                                    <thead className="bg-gray-50 dark:bg-slate-800/50 hidden md:table-header-group sticky top-32 z-40">
                                         <tr>
-                                            <th className="px-6 py-3 text-left">
+                                            <th className="px-6 py-3 text-left sticky top-32 bg-gray-50 dark:bg-slate-800/50">
                                                 <input
                                                     type="checkbox"
                                                     className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"
@@ -366,22 +366,22 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                                     onChange={toggleSelectAll}
                                                 />
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden lg:table-cell">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden lg:table-cell sticky top-32 bg-gray-50 dark:bg-slate-800/50">
                                                 게시일
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-32 bg-gray-50 dark:bg-slate-800/50">
                                                 썸네일
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-32 bg-gray-50 dark:bg-slate-800/50">
                                                 제목
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden md:table-cell sticky top-32 bg-gray-50 dark:bg-slate-800/50">
                                                 출처
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden xl:table-cell">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider hidden xl:table-cell sticky top-32 bg-gray-50 dark:bg-slate-800/50">
                                                 구분
                                             </th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-32 bg-gray-50 dark:bg-slate-800/50">
                                                 작업
                                             </th>
                                         </tr>
