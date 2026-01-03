@@ -20,14 +20,15 @@ class ThreadsConnector(ConnectorBase):
         """Fetch list of items from Threads profile"""
         try:
             url = self.base_url
-            # Normalize threads.com to threads.net (Threads domain transition)
-            url = url.replace('threads.com', 'threads.net')
+            # Normalize to threads.com (Threads' primary domain as of 2024/2025)
+            if 'threads.net' in url:
+                url = url.replace('threads.net', 'threads.com')
             
-            # Ensure it starts with https://www.threads.net/@
+            # Ensure it starts with https://www.threads.com/@
             if not url.startswith('http'):
-                url = f"https://www.threads.net/@{url.lstrip('@')}"
-            elif 'threads.net' in url and '@' not in url.split('/')[-1]:
-                # If it's something like https://www.threads.net/user, add @
+                url = f"https://www.threads.com/@{url.lstrip('@')}"
+            elif 'threads.com' in url and '@' not in url.split('/')[-1]:
+                # If it's something like https://www.threads.com/user, add @
                 parts = url.rstrip('/').split('/')
                 if not parts[-1].startswith('@'):
                     parts[-1] = f"@{parts[-1]}"

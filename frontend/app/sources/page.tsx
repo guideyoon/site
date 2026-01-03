@@ -253,11 +253,7 @@ export default function SourcesPage() {
                                     >
                                         <option value="generic_board">사이트 (기관/뉴스)</option>
                                         <option value="naver_blog">네이버 블로그</option>
-                                        <option value="instagram">Instagram</option>
                                         <option value="threads">Threads</option>
-                                        <option value="x">X (Twitter)</option>
-                                        <option value="rss">RSS</option>
-                                        <option value="api">API</option>
                                     </select>
                                 </div>
 
@@ -331,11 +327,7 @@ export default function SourcesPage() {
                                             >
                                                 <option value="generic_board">사이트 (기관/뉴스)</option>
                                                 <option value="naver_blog">네이버 블로그</option>
-                                                <option value="instagram">Instagram</option>
                                                 <option value="threads">Threads</option>
-                                                <option value="x">X (Twitter)</option>
-                                                <option value="rss">RSS</option>
-                                                <option value="api">API</option>
                                             </select>
                                         </div>
                                         <div>
@@ -547,13 +539,13 @@ export default function SourcesPage() {
                                 <div className="hidden md:block bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-800">
                                     <div className="overflow-x-auto">
                                         <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                                            <thead className="bg-gray-50 dark:bg-slate-900">
+                                            <thead className="bg-white dark:bg-slate-900">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">출처 정보</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">구분</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">수집 주기</th>
-                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">상태</th>
-                                                    <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">관리</th>
+                                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-white dark:bg-slate-900 z-50 border-b border-gray-200 dark:border-slate-800">출처 정보</th>
+                                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-white dark:bg-slate-900 z-50 border-b border-gray-200 dark:border-slate-800">구분</th>
+                                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-white dark:bg-slate-900 z-50 border-b border-gray-200 dark:border-slate-800">수집 주기</th>
+                                                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-white dark:bg-slate-900 z-50 border-b border-gray-200 dark:border-slate-800">상태</th>
+                                                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-white dark:bg-slate-900 z-50 border-b border-gray-200 dark:border-slate-800">관리</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
