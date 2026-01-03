@@ -253,7 +253,9 @@ export default function SourcesPage() {
                                     >
                                         <option value="generic_board">사이트 (기관/뉴스)</option>
                                         <option value="naver_blog">네이버 블로그</option>
+                                        <option value="instagram">Instagram</option>
                                         <option value="threads">Threads</option>
+                                        <option value="x">X (Twitter)</option>
                                         <option value="rss">RSS</option>
                                         <option value="api">API</option>
                                     </select>
@@ -329,7 +331,9 @@ export default function SourcesPage() {
                                             >
                                                 <option value="generic_board">사이트 (기관/뉴스)</option>
                                                 <option value="naver_blog">네이버 블로그</option>
+                                                <option value="instagram">Instagram</option>
                                                 <option value="threads">Threads</option>
+                                                <option value="x">X (Twitter)</option>
                                                 <option value="rss">RSS</option>
                                                 <option value="api">API</option>
                                             </select>
@@ -497,11 +501,17 @@ export default function SourcesPage() {
                                                             ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                                                             : source.type === 'threads'
                                                                 ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
-                                                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                                                : source.type === 'instagram'
+                                                                    ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
+                                                                    : source.type === 'x'
+                                                                        ? 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300'
+                                                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                                                             }`}>
                                                             {source.type === 'generic_board' ? '사이트' :
                                                                 source.type === 'naver_blog' ? '블로그' :
-                                                                    source.type === 'threads' ? 'Threads' : source.type}
+                                                                    source.type === 'threads' ? 'Threads' :
+                                                                        source.type === 'instagram' ? 'Instagram' :
+                                                                            source.type === 'x' ? 'X' : source.type}
                                                         </span>
                                                         <span className="text-xs text-gray-500 dark:text-gray-400">
                                                             주기: {source.collect_interval}분
@@ -559,11 +569,17 @@ export default function SourcesPage() {
                                                     ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
                                                     : source.type === 'threads'
                                                         ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
-                                                        : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-300'
+                                                        : source.type === 'instagram'
+                                                            ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300'
+                                                            : source.type === 'x'
+                                                                ? 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300'
+                                                                : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-300'
                                                     }`}>
                                                     {source.type === 'generic_board' ? '사이트' :
                                                         source.type === 'naver_blog' ? '블로그' :
-                                                            source.type === 'threads' ? 'Threads' : source.type}
+                                                            source.type === 'threads' ? 'Threads' :
+                                                                source.type === 'instagram' ? 'Instagram' :
+                                                                    source.type === 'x' ? 'X' : source.type}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
