@@ -544,7 +544,7 @@ export default function SourcesPage() {
                                 </div>
 
                                 {/* Desktop Table View */}
-                                <div className="hidden md:block bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-800 overflow-hidden">
+                                <div className="hidden md:block bg-white dark:bg-slate-900 rounded-lg shadow border border-gray-200 dark:border-slate-800">
                                     <div className="overflow-x-auto">
                                         <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
                                             <thead className="bg-gray-50 dark:bg-slate-900">

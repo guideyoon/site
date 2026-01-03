@@ -228,7 +228,7 @@ export default function QueuePage() {
                                 </div>
 
                                 {/* Desktop Table View */}
-                                <div className="hidden md:block bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+                                <div className="hidden md:block bg-white rounded-lg shadow border border-gray-200">
                                     <div className="overflow-x-auto">
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50">
