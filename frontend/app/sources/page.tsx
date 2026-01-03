@@ -465,13 +465,13 @@ export default function SourcesPage() {
                             </div>
                         ) : (
                             <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                                <thead className="bg-gray-50 dark:bg-slate-800 hidden md:table-header-group sticky top-16 z-40">
+                                <thead className="bg-gray-50 dark:bg-slate-900 hidden md:table-header-group sticky top-16 z-10">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">출처 정보</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">구분</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">수집 주기</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">상태</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-800">관리</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-10">출처 정보</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-10">구분</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-10">수집 주기</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-10">상태</th>
+                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-16 bg-gray-50 dark:bg-slate-900 z-10">관리</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
