@@ -233,16 +233,16 @@ export default function QueuePage() {
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
                                                         제목
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
                                                         카테고리
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                    <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
                                                         상태
                                                     </th>
-                                                    <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
+                                                    <th className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sticky top-16 bg-gray-50 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
                                                         작업
                                                     </th>
                                                 </tr>
