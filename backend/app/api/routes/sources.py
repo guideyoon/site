@@ -169,15 +169,14 @@ async def trigger_collection(
     if current_user.role != "admin" and source.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Permission denied")
     
-    # Import here to avoid circular dependency
-    from worker.tasks.collection import collect_source
-    
     # Set source to enabled on manual trigger
     if not source.enabled:
         source.enabled = True
         db.commit()
     
     try:
+        # Import here to avoid circular dependency
+        from worker.tasks.collection import collect_source
         # Trigger async task
         from worker.celery_app import celery_app
         logger = logging.getLogger(__name__)
