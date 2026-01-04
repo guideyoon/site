@@ -214,7 +214,9 @@ async def trigger_collection(
                 detail="Redis 서버에 연결할 수 없습니다. .env 파일의 REDIS_URL이 'localhost'로 되어 있는지, Redis 서비스가 실행 중인지 확인해주세요."
             )
         
+        import traceback
+        tb = traceback.format_exc()
         raise HTTPException(
             status_code=500,
-            detail=f"수집 작업 예약 중 오류가 발생했습니다: {str(e)}"
+            detail=f"수집 작업 예약 중 오류가 발생했습니다: {str(e)}\n\nTraceback:\n{tb}"
         )
