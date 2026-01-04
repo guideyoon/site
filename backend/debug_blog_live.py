@@ -27,9 +27,7 @@ def debug_blog():
     # Target: Ulsan City Official Blog (likely one of their sources)
     # blog.naver.com/ulsan_city
     test_urls = [
-        "https://blog.naver.com/naver_diary",
-        "https://blog.naver.com/ulsan_city", 
-        "https://blog.naver.com/ulsannews"
+        "https://blog.naver.com/ulsanin_"
     ]
     
     for url in test_urls:
