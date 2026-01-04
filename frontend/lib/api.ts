@@ -85,6 +85,7 @@ export const sourcesApi = {
     toggle: (id: number, enabled: boolean) =>
         api.patch(`/api/sources/${id}`, null, { params: { enabled } }),
     collect: (id: number) => api.post(`/api/sources/${id}/collect`),
+    collectAll: () => api.post('/api/sources/collect-all'),
     update: (id: number, data: any) => api.patch(`/api/sources/${id}/update`, data),
     delete: (id: number) => api.delete(`/api/sources/${id}`),
 }

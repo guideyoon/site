@@ -104,9 +104,14 @@ export default function ItemsPage() {
 
             const response = await itemsApi.list(params)
             console.log("[DEBUG] API Response Count:", response.data.length);
+            console.log("[DEBUG] Fetch Time:", new Date().toLocaleTimeString());
             if (response.data.length > 0) {
-                console.log("[DEBUG] First item ID:", response.data[0].id);
-                console.log("[DEBUG] First item Title:", response.data[0].title);
+                console.log("[DEBUG] Top Item:", {
+                    id: response.data[0].id,
+                    title: response.data[0].title,
+                    collected_at: response.data[0].collected_at,
+                    published_at: response.data[0].published_at
+                });
             }
             setItems(response.data)
             setError('')
@@ -274,6 +279,15 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                 <svg className={`w-5 h-5 ${refreshing ? 'animate-spin text-blue-500' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
+                            </button>
+                            <button
+                                onClick={handleCollectAll}
+                                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded shadow-sm transition-colors flex items-center gap-1"
+                            >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                지금 수집 시작
                             </button>
                             {refreshing ? (
                                 <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
@@ -465,9 +479,9 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                             <div className="hidden md:block bg-white dark:bg-slate-900 rounded-lg shadow border border-transparent dark:border-slate-800 transition-colors">
                                 <div className="overflow-x-auto rounded-lg">
                                     <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-                                        <thead className="bg-gray-50 dark:bg-slate-900 z-40">
+                                        <thead className="bg-gray-50 dark:bg-slate-900 z-30">
                                             <tr>
-                                                <th className="px-6 py-3 text-left sticky top-16 bg-gray-50 dark:bg-slate-900 z-50 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
+                                                <th className="px-6 py-3 text-left sticky top-16 bg-gray-50 dark:bg-slate-900 z-40 shadow-[0_1px_0_0_rgba(0,0,0,0.05)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)]">
                                                     <input
                                                         type="checkbox"
                                                         className="w-4 h-4 text-blue-600 rounded bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700"

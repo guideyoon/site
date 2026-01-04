@@ -237,3 +237,17 @@ async def trigger_collection(
             status_code=500,
             detail=f"수집 작업 예약 중 오류가 발생했습니다: {str(e)}\n\nTraceback:\n{tb}"
         )
+
+
+@router.post("/collect-all")
+async def trigger_collect_all(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Trigger collection for all enabled sources (admin only)"""
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Permission denied")
+    
+    from worker.tasks.collection import collect_all_sources
+    collect_all_sources.delay()
+    return {"message": "Global collection triggered"}
