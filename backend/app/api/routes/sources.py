@@ -47,6 +47,8 @@ async def list_sources(
     return query.all()
 
 
+from app.models.duplicate import Duplicate
+
 @router.post("", response_model=SourceResponse)
 async def create_source(
     source_data: SourceCreate,
@@ -54,6 +56,15 @@ async def create_source(
     current_user: User = Depends(get_current_user)
 ):
     """Create a new source (admin only)"""
+    # Check for duplicates
+    existing_source = db.query(Source).filter(
+        Source.base_url == source_data.base_url,
+        Source.user_id == current_user.id
+    ).first()
+    
+    if existing_source:
+        raise HTTPException(status_code=400, detail="이미 등록된 출처 URL입니다.")
+
     new_source = Source(
         name=source_data.name,
         type=source_data.type,
@@ -145,6 +156,11 @@ async def delete_source(
     item_ids = [item.id for item in items]
     
     if item_ids:
+        # Delete related duplicates
+        db.query(Duplicate).filter(
+            (Duplicate.item_id.in_(item_ids)) | (Duplicate.duplicate_of_item_id.in_(item_ids))
+        ).delete(synchronize_session=False)
+
         db.query(Queue).filter(Queue.item_id.in_(item_ids)).delete(synchronize_session=False)
         db.query(Item).filter(Item.source_id == source_id).delete(synchronize_session=False)
     
