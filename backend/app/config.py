@@ -24,7 +24,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
     
     class Config:
-        env_file = "../.env"
+        # Look for .env in current directory, parent directory, and backend directory
+        # This handles running from root, running from backend/, and Docker
+        env_file = [".env", "../.env", "backend/.env"]
         case_sensitive = False
         extra = "ignore"
 

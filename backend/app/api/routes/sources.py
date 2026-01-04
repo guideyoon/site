@@ -189,16 +189,27 @@ async def trigger_collection(
         }
     except Exception as e:
         import logging
+        import socket
         from kombu.exceptions import OperationalError
         
         logger = logging.getLogger(__name__)
         logger.error(f"Failed to trigger collection for source {source_id}: {e}")
         
-        # Check if it's a Redis/Broker error
-        if isinstance(e, OperationalError) or "Connection" in str(e) or "refused" in str(e).lower() or "timeout" in str(e).lower():
+        # More robust checking for Redis/Broker/Connection errors
+        error_str = str(e).lower()
+        is_conn_error = (
+            isinstance(e, (OperationalError, socket.gaierror, ConnectionError)) or
+            "connection" in error_str or 
+            "refused" in error_str or 
+            "timeout" in error_str or 
+            "host" in error_str or
+            "redis" in error_str
+        )
+        
+        if is_conn_error:
             raise HTTPException(
                 status_code=503, 
-                detail="Redis 서버에 연결할 수 없습니다. 수집 플랫폼의 백엔드 서비스(Redis, Worker) 상태를 확인해주세요."
+                detail="Redis 서버에 연결할 수 없습니다. .env 파일의 REDIS_URL이 'localhost'로 되어 있는지, Redis 서비스가 실행 중인지 확인해주세요."
             )
         
         raise HTTPException(
