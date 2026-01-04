@@ -1,9 +1,6 @@
 import sys
 import os
-
-# Add backend directory to path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend')))
-
+# Inside Docker, /app is in PYTHONPATH, so we can import app directly
 from app.database import SessionLocal
 from app.models.item import Item
 
