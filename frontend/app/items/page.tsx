@@ -123,6 +123,20 @@ export default function ItemsPage() {
         }
     }
 
+    const handleCollectAll = async () => {
+        if (!confirm('모든 출처에서 지금 즉시 수집을 시작하시겠습니까?')) return
+        setRefreshing(true)
+        try {
+            await sourcesApi.collectAll()
+            alert('전체 수집 작업이 시작되었습니다. 2-3초 후 자동으로 새로고침됩니다.')
+            setTimeout(() => fetchItems(false), 3000)
+        } catch (err: any) {
+            alert('수집 시작 실패: ' + (err.response?.data?.detail || '알 수 없는 오류'))
+        } finally {
+            setRefreshing(false)
+        }
+    }
+
     const handleViewDetail = async (itemId: number) => {
         try {
             const response = await itemsApi.get(itemId)
