@@ -177,10 +177,11 @@ async def trigger_collection(
     try:
         # Import here to avoid circular dependency
         from worker.tasks.collection import collect_source
-        # Trigger async task
         from worker.celery_app import celery_app
-        logger = logging.getLogger(__name__)
-        logger.info(f"Triggering collection for source {source_id} using broker: {celery_app.conf.broker_url}")
+        import logging
+        
+        _logger = logging.getLogger(__name__)
+        _logger.info(f"Triggering collection for source {source_id} using broker: {celery_app.conf.broker_url}")
         
         task = collect_source.delay(source_id)
         
@@ -194,8 +195,8 @@ async def trigger_collection(
         import socket
         from kombu.exceptions import OperationalError
         
-        logger = logging.getLogger(__name__)
-        logger.error(f"Failed to trigger collection for source {source_id}: {e}")
+        _logger = logging.getLogger(__name__)
+        _logger.error(f"Failed to trigger collection for source {source_id}: {e}")
         
         # More robust checking for Redis/Broker/Connection errors
         error_str = str(e).lower()
