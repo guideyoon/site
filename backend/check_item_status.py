@@ -12,7 +12,8 @@ def check_item_status():
         sources = db.query(Source).all()
         print("Sources:")
         for s in sources:
-            print(f"ID: {s.id}, Name: {s.name}, Type: {s.type}")
+            last_col = str(s.last_collected_at)[:19] if s.last_collected_at else "None"
+            print(f"ID: {s.id}, Name: {s.name}, Type: {s.type}, Enabled: {s.enabled}, LastCol: {last_col}")
             
         print("\nTop 10 Items (Dashboard Order - Published At DESC):")
         items = db.query(Item.id, Item.title, Item.status, Source.type, Source.name, Item.published_at)\
