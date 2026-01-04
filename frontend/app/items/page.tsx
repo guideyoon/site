@@ -55,6 +55,7 @@ export default function ItemsPage() {
     const [searchQuery, setSearchQuery] = useState('')
 
     const [isInitialLoad, setIsInitialLoad] = useState(true)
+    const [isMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
         const token = localStorage.getItem('token')
@@ -81,6 +82,10 @@ export default function ItemsPage() {
             fetchItems(false)
         }
     }, [typeFilter, sourceFilter, searchQuery])
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     const fetchSources = async () => {
         try {
@@ -305,7 +310,7 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                             </button>
                             {refreshing ? (
                                 <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
-                            ) : (
+                            ) : isMounted ? (
                                 <div className="flex flex-col">
                                     <span className="text-xs text-gray-400">
                                         {new Date().toLocaleTimeString()} 기준
@@ -317,7 +322,7 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            ) : null}
                         </div>
                         <div className="flex space-x-2 w-full sm:w-auto">
                             <button
