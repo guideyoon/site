@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@celery_app.task(bind=True, max_retries=3)
+@celery_app.task(name='worker.tasks.processing.parse_and_store', bind=True, max_retries=3)
 def parse_and_store(self, source_id: int, item_data: dict):
     """Parse item data and store in database"""
     db = SessionLocal()
@@ -59,7 +59,7 @@ def parse_and_store(self, source_id: int, item_data: dict):
         db.close()
 
 
-@celery_app.task(bind=True, max_retries=3)
+@celery_app.task(name='worker.tasks.processing.dedup_classify_summarize', bind=True, max_retries=3)
 def dedup_classify_summarize(self, item_id: int):
     """Process item: deduplication, classification, and summarization"""
     db = SessionLocal()

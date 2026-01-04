@@ -179,7 +179,10 @@ async def trigger_collection(
     
     try:
         # Trigger async task
-        # broker_connection_timeout will prevent long hangs
+        from worker.celery_app import celery_app
+        logger = logging.getLogger(__name__)
+        logger.info(f"Triggering collection for source {source_id} using broker: {celery_app.conf.broker_url}")
+        
         task = collect_source.delay(source_id)
         
         return {

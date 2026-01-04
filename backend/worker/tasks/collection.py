@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@celery_app.task(bind=True, max_retries=3)
+@celery_app.task(name='worker.tasks.collection.collect_all_sources', bind=True, max_retries=3)
 def collect_all_sources(self):
     """Collect from all enabled sources belonging to active users"""
     db = SessionLocal()
@@ -59,7 +59,7 @@ def collect_all_sources(self):
         db.close()
 
 
-@celery_app.task(bind=True, max_retries=3)
+@celery_app.task(name='worker.tasks.collection.collect_source', bind=True, max_retries=3)
 def collect_source(self, source_id: int):
     """Collect from a specific source"""
     db = SessionLocal()
