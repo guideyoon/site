@@ -20,22 +20,16 @@ class ThreadsConnector(ConnectorBase):
         """Fetch list of items from Threads profile"""
         try:
             url = self.base_url
-            # Normalize to threads.com (Threads' primary domain as of 2024/2025)
-            if 'threads.net' in url:
-                url = url.replace('threads.net', 'threads.com')
+            # Use the provided URL (usually threads.net) and let redirects happen naturally
+            # if 'threads.net' in url:
+            #     url = url.replace('threads.net', 'threads.com')
             
-            # Ensure it starts with https://www.threads.com/@
+            # Ensure it starts with https://www.threads.net/@
             if not url.startswith('http'):
-                url = f"https://www.threads.com/@{url.lstrip('@')}"
-            elif 'threads.com' in url and '@' not in url.split('/')[-1]:
-                # If it's something like https://www.threads.com/user, add @
-                parts = url.rstrip('/').split('/')
-                if not parts[-1].startswith('@'):
-                    parts[-1] = f"@{parts[-1]}"
-                    url = "/".join(parts)
-
+                url = f"https://www.threads.net/@{url.lstrip('@')}"
+            
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Upgrade-Insecure-Requests': '1',
