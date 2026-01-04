@@ -93,15 +93,7 @@ export default function ItemDetailPage() {
         }
     }
 
-    const handleAddToQueue = async () => {
-        try {
-            await itemsApi.addToQueue(itemId)
-            alert('대기열에 추가되었습니다')
-            router.push('/queue')
-        } catch (err: any) {
-            alert(err.response?.data?.detail || '대기열 추가에 실패했습니다')
-        }
-    }
+
 
     const handleDeleteItem = async () => {
         if (!confirm('정말 삭제하시겠습니까?')) return

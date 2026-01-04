@@ -95,7 +95,7 @@ export default function ItemsPage() {
         else setRefreshing(true)
 
         try {
-            const params: any = { status: 'collected' }
+            const params: any = {}
             if (typeFilter) params.type = typeFilter
             if (sourceFilter) params.source_id = sourceFilter
             if (searchQuery) params.q = searchQuery
