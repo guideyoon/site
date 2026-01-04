@@ -53,7 +53,8 @@ def debug_blog():
             if len(items) == 0:
                 print("DEBUG: RSS returned 0 items. Investigating Raw Response...")
                 import requests
-                rss_url = f"https://rss.blog.naver.com/{connector._extract_blog_id(url)}.xml"
+                blog_id = connector._extract_blog_id(url)
+                rss_url = f"https://rss.blog.naver.com/{blog_id}.xml"
                 headers = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                     'Accept': 'application/xml,text/xml,*/*'
@@ -61,9 +62,66 @@ def debug_blog():
                 try:
                     resp = requests.get(rss_url, headers=headers, timeout=10)
                     print(f"DEBUG: Status Code: {resp.status_code}")
-                    print(f"DEBUG: Content Preview:\n{resp.text[:500]}")
+                    print(f"DEBUG: Content Preview:\n{resp.text[:200]}") # Shorten preview
                 except Exception as e:
                     print(f"DEBUG: Manual Request Failed: {e}")
+                
+                # FALLBACK: Try Scraping Mobile List
+                print("\nDEBUG: Attempting Mobile List Scraping (Fallback)...")
+                mobile_url = f"https://m.blog.naver.com/{blog_id}"
+                mobile_headers = {
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+                    'Referer': 'https://m.naver.com/'
+                }
+                try:
+                    m_resp = requests.get(mobile_url, headers=mobile_headers, timeout=10)
+                    if m_resp.status_code == 200:
+                        from bs4 import BeautifulSoup
+                        soup = BeautifulSoup(m_resp.text, 'html.parser')
+                        # Naver Mobile List usually has items in various structures. 
+                        # Try common selectors for post list
+                        # .list_item .title, .post_list .title etc.
+                        # Actually the links often contain logNo.
+                        
+                        found_mobile_items = []
+                        # Strategy: Look for specific class names common in mobile themes
+                        candidates = soup.select('.list_post_article, .post_list .item, .list_item, .card_item')
+                        
+                        if not candidates:
+                            # Fallback: find all links with logNo
+                            print("DEBUG: No list classes found. Searching for links with logNo...")
+                            links = soup.find_all('a', href=True)
+                            for a in links:
+                                href = a['href']
+                                if f"blog.naver.com/{blog_id}/" in href or (f"/{blog_id}/" in href and 'logNo' not in href):
+                                     # Likely a post link like /blogId/logNo
+                                    parts = href.split('/')
+                                    if parts[-1].isdigit():
+                                        title = a.get_text(strip=True)
+                                        if title:
+                                            found_mobile_items.append({'title': title, 'url': f"https://m.blog.naver.com/{blog_id}/{parts[-1]}"})
+                        else:
+                            for c in candidates:
+                                title_tag = c.select_one('.title, .ell')
+                                link_tag = c.find('a') if c.name != 'a' else c
+                                if title_tag and link_tag:
+                                    href = link_tag.get('href')
+                                    # Normalize href
+                                    if href.startswith('/'):
+                                        href = f"https://m.blog.naver.com{href}"
+                                    found_mobile_items.append({
+                                        'title': title_tag.get_text(strip=True),
+                                        'url': href
+                                    })
+
+                        print(f"DEBUG: Mobile Scraping Found {len(found_mobile_items)} items")
+                        for i in found_mobile_items[:3]:
+                            print(f" - [Mobile] {i['title']} ({i['url']})")
+                    else:
+                        print(f"DEBUG: Mobile Site Failed: {m_resp.status_code}")
+                except Exception as me:
+                    print(f"DEBUG: Mobile Scraping Error: {me}")
+
 
             if len(items) > 0:
                 print("DEBUG: RSS Success. Checking first item detail...")
