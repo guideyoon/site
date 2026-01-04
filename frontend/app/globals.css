@@ -27,3 +27,10 @@
     @apply transition-colors duration-300;
   }
 }
+
+.first-row-spacer::before {
+  content: '';
+  display: block;
+  height: 64px;
+  margin-top: -64px;
+}

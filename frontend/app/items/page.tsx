@@ -529,8 +529,8 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
-                                            {items.map((item) => (
-                                                <tr key={`desktop-${item.id}`} className={`hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                                            {items.map((item, index) => (
+                                                <tr key={`desktop-${item.id}`} className={`hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''} ${index === 0 ? 'first-row-spacer' : ''}`}>
                                                     <td className="px-6 py-4">
                                                         <input
                                                             type="checkbox"

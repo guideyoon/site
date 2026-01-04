@@ -9,23 +9,33 @@ from app.models.user import User
 def debug_query():
     db = SessionLocal()
     try:
-        # 1. Search for 'g3g3'
-        items = db.query(Item).filter(Item.title.ilike('%g3g3%')).all()
-        print(f"Found {len(items)} items with title 'g3g3':")
+        # 1. Search for 'f3f'
+        print("\nSearching for 'f3f'...")
+        items = db.query(Item).filter(Item.title.ilike('%f3f%')).all()
         for i in items:
-            print(f" - ID: {i.id} | Status: {i.status} | Date: {i.published_at} | SourceID: {i.source_id} | UserID: {i.user_id}")
+            print(f" - ID: {i.id} | Title: {i.title} | Status: {i.status} | Date: {i.published_at} | SrcID: {i.source_id} | UserID: {i.user_id}")
             
-        # 2. Check ALL Sources
-        print("\nAll Sources:")
-        sources = db.query(Source).all()
-        for s in sources:
-            print(f" - ID: {s.id} | Name: {s.name} | Type: {s.type} | UserID: {s.user_id}")
-                
-        # 3. Check ALL Users
-        print("\nAll Users:")
-        users = db.query(User).all()
-        for u in users:
-            print(f" - ID: {u.id} | Username: {u.username} | Role: {u.role}")
+        # Check Source of found item
+        if items:
+            sid = items[0].source_id
+            s = db.query(Source).get(sid)
+            print(f" - Source {sid}: {s.name} (Type: {s.type} | UserID: {s.user_id})")
+
+        # Simulate list_items API call exactly (Admin View)
+        print("\nSimulating list_items (Admin, Limit 10):")
+        query = db.query(Item).outerjoin(Source, Item.source_id == Source.id)
+        query = query.filter(Item.status != "deleted")
+        query = query.order_by(Item.published_at.desc().nullslast(), Item.collected_at.desc())
+        results = query.limit(10).all()
+        
+        print(f"Top 10 Results:")
+        found = False
+        for item in results:
+             print(f" - ID: {item.id} | Title: {item.title} | Date: {item.published_at} | UserID: {item.user_id}")
+             if item.title == 'f3f': found = True
+        
+        if found: print(" -> 'f3f' is in the API result list.")
+        else: print(" -> 'f3f' is NOT in the API result list.")
 
     finally:
         db.close()
