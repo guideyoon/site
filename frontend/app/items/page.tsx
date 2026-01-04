@@ -259,8 +259,21 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <div className="flex items-center space-x-4">
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">수집함</h2>
-                            {refreshing && (
+                            <button
+                                onClick={() => fetchItems(false)}
+                                className="p-2 text-gray-500 hover:text-blue-500 transition-colors"
+                                title="새로고침"
+                            >
+                                <svg className={`w-5 h-5 ${refreshing ? 'animate-spin text-blue-500' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                            {refreshing ? (
                                 <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
+                            ) : (
+                                <span className="text-xs text-gray-400">
+                                    {new Date().toLocaleTimeString()} 기준
+                                </span>
                             )}
                         </div>
                         <div className="flex space-x-2 w-full sm:w-auto">
