@@ -75,10 +75,122 @@ class NaverBlogConnector(ConnectorBase):
                 
                 items.append(item)
                 
+            if not items:
+                logger.info("RSS returned 0 items. Attempting mobile scraping fallback...")
+                items = self._scrape_mobile_list(blog_id)
+                
             return items
             
         except Exception as e:
             logger.error(f"Error fetching Naver Blog RSS: {e}")
+            # Try fallback even on RSS error
+            try:
+                blog_id = self._extract_blog_id(blog_url)
+                if blog_id:
+                    return self._scrape_mobile_list(blog_id)
+            except:
+                pass
+            return []
+
+    def _scrape_mobile_list(self, blog_id: str) -> List[Dict[str, Any]]:
+        """Scrape the mobile blog list page when RSS fails"""
+        try:
+            mobile_url = f"https://m.blog.naver.com/{blog_id}"
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+                'Referer': 'https://m.naver.com/'
+            }
+            response = requests.get(mobile_url, headers=headers, timeout=10)
+            if response.status_code != 200:
+                logger.warning(f"Mobile scraping failed: status {response.status_code}")
+                return []
+                
+            soup = BeautifulSoup(response.text, 'html.parser')
+            found_items = []
+            
+            # Strategy: Look for post links
+            # Mobile themes vary, but links usually follow patterns
+            # Priority 1: List classes
+            candidates = soup.select('.list_post_article, .post_list .item, .list_item, .card_item')
+            
+            if candidates:
+                for c in candidates:
+                    try:
+                        title_tag = c.select_one('.title, .ell')
+                        link_tag = c.find('a') if c.name != 'a' else c
+                        
+                        if title_tag and link_tag:
+                            title = title_tag.get_text(strip=True)
+                            href = link_tag.get('href')
+                            if not href: continue
+                            
+                            if href.startswith('/'):
+                                href = f"https://m.blog.naver.com{href}"
+                                
+                            # Detail fetch will get the rest
+                            item = {
+                                'title': title,
+                                'url': href,
+                                'published_at': datetime.now(), # Approximate as now since list has no date usually
+                                'raw_text': '',
+                                'image_urls': [],
+                                'source_item_id': self._extract_log_no(href)
+                            }
+                            
+                            # Fetch detail to get real date/images
+                            try:
+                                detail = self.fetch_detail(href)
+                                if detail['raw_text']:
+                                    item['raw_text'] = detail['raw_text']
+                                if detail['image_urls']:
+                                    item['image_urls'] = detail['image_urls']
+                            except Exception:
+                                pass
+                                
+                            found_items.append(item)
+                    except Exception:
+                        continue
+            else:
+                # Priority 2: Raw link search
+                links = soup.find_all('a', href=True)
+                seen_urls = set()
+                for a in links:
+                    href = a['href']
+                    if f"blog.naver.com/{blog_id}/" in href or (f"/{blog_id}/" in href and 'logNo' not in href):
+                        # Avoid duplicates
+                        if href in seen_urls: continue
+                        
+                        parts = href.split('/')
+                        if parts[-1].isdigit(): # Likely logNo
+                            title = a.get_text(strip=True)
+                            if not title: continue
+                            
+                            full_url = href if href.startswith('http') else f"https://m.blog.naver.com{href}"
+                            seen_urls.add(full_url)
+                            
+                            item = {
+                                'title': title,
+                                'url': full_url,
+                                'published_at': datetime.now(),
+                                'raw_text': '',
+                                'image_urls': [],
+                                'source_item_id': parts[-1] 
+                            }
+                            # Simple fetch detail
+                            try:
+                                detail = self.fetch_detail(full_url)
+                                if detail.get('raw_text'): item['raw_text'] = detail['raw_text']
+                                if detail.get('image_urls'): item['image_urls'] = detail['image_urls']
+                            except: pass
+                            
+                            found_items.append(item)
+                            if len(found_items) >= 10: break
+                            
+            logger.info(f"Scraped {len(found_items)} items from mobile list for {blog_id}")
+            return found_items
+            
+        except Exception as e:
+            logger.error(f"Error scraping mobile list: {e}")
             return []
 
     def fetch_detail(self, url: str) -> Dict[str, Any]:
