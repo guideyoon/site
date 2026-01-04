@@ -278,9 +278,14 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                             {refreshing ? (
                                 <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
                             ) : (
-                                <span className="text-xs text-gray-400">
-                                    {new Date().toLocaleTimeString()} 기준
-                                </span>
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-400">
+                                        {new Date().toLocaleTimeString()} 기준
+                                    </span>
+                                    <div className="bg-yellow-100 dark:bg-yellow-900/30 text-[10px] px-2 py-1 rounded mt-1 border border-yellow-200 dark:border-yellow-800 font-mono">
+                                        DEBUG: Count={items.length} | TopItem=#{items[0]?.id || 'N/A'}
+                                    </div>
+                                </div>
                             )}
                         </div>
                         <div className="flex space-x-2 w-full sm:w-auto">
