@@ -65,6 +65,7 @@ export default function Navbar({ user }: NavbarProps) {
                         <div className="flex">
                             <div className="flex-shrink-0 flex items-center">
                                 <h1 className="text-xl font-bold text-blue-600 cursor-pointer" onClick={() => router.push('/dashboard')}>사이트 수집기</h1>
+                                <span className="ml-2 text-[8px] text-gray-400 dark:text-gray-600">v1.2-dbg</span>
                             </div>
                             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                                 {navLinks.map((link) => (

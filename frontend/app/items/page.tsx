@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -101,6 +103,11 @@ export default function ItemsPage() {
             if (searchQuery) params.q = searchQuery
 
             const response = await itemsApi.list(params)
+            console.log("[DEBUG] API Response Count:", response.data.length);
+            if (response.data.length > 0) {
+                console.log("[DEBUG] First item ID:", response.data[0].id);
+                console.log("[DEBUG] First item Title:", response.data[0].title);
+            }
             setItems(response.data)
             setError('')
         } catch (err: any) {
