@@ -171,7 +171,7 @@ export default function ItemDetailPage() {
 
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-white dark:bg-slate-900 rounded-lg shadow p-4 sm:p-6 mb-6 border border-transparent dark:border-slate-800 transition-colors">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div className="sticky top-[7.5rem] sm:top-32 z-40 bg-white dark:bg-slate-900 -mx-4 -mt-4 px-4 pt-4 sm:-mx-6 sm:-mt-6 sm:px-6 sm:pt-6 pb-4 border-b border-gray-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 shadow-sm">
                         <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">항목 상세 정보</h1>
                         <div className="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
                             {!editing ? (
