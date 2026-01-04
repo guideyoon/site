@@ -16,6 +16,11 @@ const API_URL = getApiUrl();
 const api = axios.create({
     baseURL: API_URL,
     timeout: 10000, // 10 seconds timeout
+    headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+    },
 })
 
 // Add auth token and logging to requests
