@@ -283,7 +283,10 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                         {new Date().toLocaleTimeString()} 기준
                                     </span>
                                     <div className="bg-yellow-100 dark:bg-yellow-900/30 text-[10px] px-2 py-1 rounded mt-1 border border-yellow-200 dark:border-yellow-800 font-mono">
-                                        DEBUG: Count={items.length} | TopItem=#{items[0]?.id || 'N/A'}
+                                        <div>DEBUG: Count={items.length} | TopItem=#{items[0]?.id || 'N/A'}</div>
+                                        <div className="text-[9px] mt-1 text-blue-600 dark:text-blue-400">
+                                            Top 5: {items.slice(0, 5).map(i => `#${i.id}:${i.title.substring(0, 10)}`).join(' | ')}
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -418,7 +421,7 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                                     </div>
                                                     <div className="flex-grow min-w-0">
                                                         <div className="text-sm font-bold text-gray-900 dark:text-white line-clamp-2 leading-tight mb-1">
-                                                            {item.title}
+                                                            [{item.id}] {item.title}
                                                         </div>
                                                         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                                                             <span className="truncate max-w-[100px]">{item.source_name}</span>
@@ -532,7 +535,9 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4">
-                                                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{item.title}</div>
+                                                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">
+                                                            [{item.id}] {item.title}
+                                                        </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 hidden md:table-cell">
                                                         {item.source_name}
