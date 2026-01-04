@@ -308,11 +308,11 @@ export default function ItemDetailPage() {
                     </div>
                 </div>
 
-                {/* Images Gallery & Download */}
-                {item.image_urls && item.image_urls.length > 0 && (
+                {/* Images & Videos Gallery & Download */}
+                {(item.image_urls && item.image_urls.length > 0) && (
                     <div className="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-6 mb-6 border border-transparent dark:border-slate-800 transition-colors mt-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white underline decoration-blue-500 decoration-2 underline-offset-4">수집된 이미지 ({item.image_urls.length})</h2>
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white underline decoration-blue-500 decoration-2 underline-offset-4">수집된 미디어 ({(item.image_urls?.length || 0) + ((item as any).meta_json?.video_urls?.length || 0)})</h2>
                             <button
                                 onClick={() => {
                                     item.image_urls?.forEach((url, index) => {
@@ -331,42 +331,62 @@ export default function ItemDetailPage() {
                                 }}
                                 className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
                             >
-                                <span>📥</span> 전체 이미지 다운로드
+                                <span>📥</span> 전체 미디어 다운로드
                             </button>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {item.image_urls.map((url, idx) => (
-                                <div key={idx} className="group relative bg-gray-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
-                                    <div className="aspect-square relative flex items-center justify-center bg-white dark:bg-slate-900 overflow-hidden">
-                                        <img
-                                            src={getProxyUrl(url)}
-                                            alt={`수집 이미지 ${idx + 1}`}
-                                            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                                            onError={(e) => {
-                                                (e.target as any).src = 'https://via.placeholder.com/400?text=Image+Not+Found';
-                                            }}
-                                        />
-                                    </div>
-                                    <div className="p-3 flex justify-center bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800">
-                                        <button
-                                            onClick={() => {
-                                                const filename = `image_${item.id}_${idx + 1}.jpg`;
-                                                const downloadUrl = `/api/items/download-proxy?url=${encodeURIComponent(url)}&filename=${filename}`;
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {item.image_urls.map((url, idx) => {
+                                const video_urls = (item as any).meta_json?.video_urls || [];
+                                const video_url = video_urls[idx]; // Try to match by index if it's a carousel
 
-                                                const link = document.createElement('a');
-                                                link.href = downloadUrl;
-                                                link.setAttribute('download', filename);
-                                                document.body.appendChild(link);
-                                                link.click();
-                                                document.body.removeChild(link);
-                                            }}
-                                            className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline py-1.5 px-4 rounded-full bg-blue-50 dark:bg-blue-900/30 transition-colors"
-                                        >
-                                            다운로드
-                                        </button>
+                                return (
+                                    <div key={idx} className="group relative bg-gray-50 dark:bg-slate-800 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
+                                        <div className="aspect-video relative flex items-center justify-center bg-white dark:bg-slate-900 overflow-hidden">
+                                            {video_url ? (
+                                                <video
+                                                    src={getProxyUrl(video_url)}
+                                                    controls
+                                                    className="w-full h-full object-contain"
+                                                    poster={getProxyUrl(url)}
+                                                >
+                                                    해당 브라우저는 비디오 태그를 지원하지 않습니다.
+                                                </video>
+                                            ) : (
+                                                <img
+                                                    src={getProxyUrl(url)}
+                                                    alt={`수집 미디어 ${idx + 1}`}
+                                                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                                                    onError={(e) => {
+                                                        (e.target as any).src = 'https://via.placeholder.com/400?text=Image+Not+Found';
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                        <div className="p-3 flex justify-between items-center bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800">
+                                            <span className="text-[10px] text-gray-500 font-medium">{video_url ? '🎥 VIDEO' : '📷 IMAGE'}</span>
+                                            <button
+                                                onClick={() => {
+                                                    const isVideo = !!video_url;
+                                                    const targetUrl = video_url || url;
+                                                    const extension = isVideo ? 'mp4' : 'jpg';
+                                                    const filename = `${isVideo ? 'video' : 'image'}_${item.id}_${idx + 1}.${extension}`;
+                                                    const downloadUrl = `/api/items/download-proxy?url=${encodeURIComponent(targetUrl)}&filename=${filename}`;
+
+                                                    const link = document.createElement('a');
+                                                    link.href = downloadUrl;
+                                                    link.setAttribute('download', filename);
+                                                    document.body.appendChild(link);
+                                                    link.click();
+                                                    document.body.removeChild(link);
+                                                }}
+                                                className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline py-1.5 px-4 rounded-full bg-blue-50 dark:bg-blue-900/30 transition-colors"
+                                            >
+                                                다운로드
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}

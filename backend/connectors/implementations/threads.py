@@ -161,10 +161,11 @@ class ThreadsConnector(ConnectorBase):
                 from datetime import timezone
                 published_at = datetime.fromtimestamp(taken_at, tz=timezone.utc) if isinstance(taken_at, (int, float)) else None
                 
-                # Images
+                # Images & Videos
                 image_urls = []
+                video_urls = []
                 
-                # Check single image
+                # Check single media
                 image_versions = post.get('image_versions2', {})
                 if isinstance(image_versions, dict):
                     candidates = image_versions.get('candidates', [])
@@ -173,12 +174,20 @@ class ThreadsConnector(ConnectorBase):
                         if url_cand:
                             image_urls.append(url_cand)
                 
+                video_versions = post.get('video_versions', [])
+                if isinstance(video_versions, list) and video_versions:
+                    v_url = video_versions[0].get('url') if isinstance(video_versions[0], dict) else None
+                    if v_url:
+                        video_urls.append(v_url)
+                
                 # Check carousel
                 carousel = post.get('carousel_media', [])
                 if isinstance(carousel, list):
                     for media in carousel:
                         if not isinstance(media, dict):
                             continue
+                        
+                        # Image in carousel
                         c_image_versions = media.get('image_versions2', {})
                         if isinstance(c_image_versions, dict):
                             c_candidates = c_image_versions.get('candidates', [])
@@ -186,9 +195,17 @@ class ThreadsConnector(ConnectorBase):
                                 c_url_cand = c_candidates[0].get('url') if isinstance(c_candidates[0], dict) else None
                                 if c_url_cand:
                                     image_urls.append(c_url_cand)
+                        
+                        # Video in carousel
+                        c_video_versions = media.get('video_versions', [])
+                        if isinstance(c_video_versions, list) and c_video_versions:
+                            cv_url = c_video_versions[0].get('url') if isinstance(c_video_versions[0], dict) else None
+                            if cv_url:
+                                video_urls.append(cv_url)
                 
                 # Filter None and empty
                 image_urls = [u for u in image_urls if u]
+                video_urls = [u for u in video_urls if u]
                 
                 # Metadata
                 text_app_info = post.get('text_post_app_info', {})
@@ -206,6 +223,8 @@ class ThreadsConnector(ConnectorBase):
                         'like_count': post.get('like_count'),
                         'reply_count': text_app_info.get('direct_reply_count'),
                         'repost_count': text_app_info.get('repost_count'),
+                        'video_urls': video_urls,
+                        'is_video': len(video_urls) > 0
                     }
                 })
             except Exception as e:
