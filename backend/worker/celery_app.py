@@ -19,15 +19,15 @@ celery_app.conf.update(
     task_time_limit=30 * 60,  # 30 minutes
     task_soft_time_limit=25 * 60,  # 25 minutes
     broker_connection_timeout=2.0,  # 2 seconds timeout for faster feedback
-    broker_connection_retry_on_startup=False,
+    broker_connection_retry_on_startup=True,
     include=[
         'worker.tasks.collection',
         'worker.tasks.processing',
     ]
 )
 
-# Auto-discover tasks
-celery_app.autodiscover_tasks(['worker.tasks.collection', 'worker.tasks.processing'])
+# Auto-discover tasks via the include list above
+# celery_app.autodiscover_tasks(['worker.tasks.collection', 'worker.tasks.processing'])
 
 # Celery Beat Schedule - periodic tasks
 celery_app.conf.beat_schedule = {
