@@ -145,7 +145,13 @@ async def list_items(
     # Order by published_at descending (newest first), then collected_at
     query = query.order_by(Item.published_at.desc().nullslast(), Item.collected_at.desc())
     
+    print(f"[DEBUG API] User: {current_user.username} (ID: {current_user.id}, Role: {current_user.role})")
+    print(f"[DEBUG API] Filtering for User ID: {current_user.id if current_user.role != 'admin' else 'ALL'}")
+    
     results = query.offset(skip).limit(limit).all()
+    print(f"[DEBUG API] Results Count: {len(results)}")
+    if results:
+        print(f"[DEBUG API] First Item ID: {results[0][0].id}, Title: {results[0][0].title}")
     
     # Format response
     items_response = []
