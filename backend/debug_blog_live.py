@@ -35,10 +35,10 @@ def debug_blog():
         print(f"\nDEBUG: Testing Naver Blog Collection for {url}")
         
         try:
-            source = Source(url)
+            # Fix: Use kwargs for SQLAlchemy model
+            source = Source(base_url=url, type="naver_blog", name="Debug Blog")
             # Need to mock attributes expected by connector if any (connector uses base_url)
             source.id = 999
-            source.name = "Debug Blog"
             
             connector = NaverBlogConnector(source)
             
