@@ -249,5 +249,5 @@ async def trigger_collect_all(
         raise HTTPException(status_code=403, detail="Permission denied")
     
     from worker.tasks.collection import collect_all_sources
-    collect_all_sources.delay()
+    collect_all_sources.delay(force=True)
     return {"message": "Global collection triggered"}

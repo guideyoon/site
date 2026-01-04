@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @celery_app.task(name='worker.tasks.collection.collect_all_sources', bind=True, max_retries=3)
-def collect_all_sources(self):
+def collect_all_sources(self, force=False):
     """Collect from all enabled sources belonging to active users"""
     db = SessionLocal()
     try:
@@ -47,10 +47,10 @@ def collect_all_sources(self):
                     if now < last_col + timedelta(minutes=source.collect_interval):
                         should_collect = False
                 
-                if should_collect:
+                if force or should_collect:
                     collect_source.delay(source.id)
                     triggered_count += 1
-                    logger.info(f"Triggered collection for {source.name} (interval: {source.collect_interval}m)")
+                    logger.info(f"Triggered {'FORCED ' if force else ''}collection for {source.name}")
             except Exception as e:
                 logger.error(f"Failed to check/trigger collection for source {source.id}: {e}")
         
