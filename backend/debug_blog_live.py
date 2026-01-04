@@ -44,9 +44,26 @@ def debug_blog():
             
             # 1. Test RSS Fetch
             print("DEBUG: Fetching RSS List...")
+            # Modify the connector temporarily to use headers if strict mode
+            # But here we just assume the connector code is as-is.
             items = connector.fetch_list()
             print(f"DEBUG: RSS Result -> Found {len(items)} items")
             
+            if len(items) == 0:
+                print("DEBUG: RSS returned 0 items. Investigating Raw Response...")
+                import requests
+                rss_url = f"https://rss.blog.naver.com/{connector._extract_blog_id(url)}.xml"
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'application/xml,text/xml,*/*'
+                }
+                try:
+                    resp = requests.get(rss_url, headers=headers, timeout=10)
+                    print(f"DEBUG: Status Code: {resp.status_code}")
+                    print(f"DEBUG: Content Preview:\n{resp.text[:500]}")
+                except Exception as e:
+                    print(f"DEBUG: Manual Request Failed: {e}")
+
             if len(items) > 0:
                 print("DEBUG: RSS Success. Checking first item detail...")
                 first_item = items[0]
