@@ -54,8 +54,6 @@ export default function ItemsPage() {
     const [sourceFilter, setSourceFilter] = useState('')
     const [searchQuery, setSearchQuery] = useState('')
 
-    const [isInitialLoad, setIsInitialLoad] = useState(true)
-    const [isMounted, setIsMounted] = useState(false)
 
     useEffect(() => {
         const token = localStorage.getItem('token')
@@ -75,17 +73,9 @@ export default function ItemsPage() {
         loadUser()
         fetchSources()
 
-        if (isInitialLoad) {
-            fetchItems(true)
-            setIsInitialLoad(false)
-        } else {
-            fetchItems(false)
-        }
+        fetchItems(false)
     }, [typeFilter, sourceFilter, searchQuery])
 
-    useEffect(() => {
-        setIsMounted(true)
-    }, [])
 
     const fetchSources = async () => {
         try {
@@ -108,36 +98,12 @@ export default function ItemsPage() {
             if (searchQuery) params.q = searchQuery
 
             const response = await itemsApi.list(params)
-            console.log("[DEBUG] API Response Count:", response.data.length);
-            console.log("[DEBUG] Fetch Time:", new Date().toLocaleTimeString());
-            if (response.data.length > 0) {
-                console.log("[DEBUG] Top Item:", {
-                    id: response.data[0].id,
-                    title: response.data[0].title,
-                    collected_at: response.data[0].collected_at,
-                    published_at: response.data[0].published_at
-                });
-            }
             setItems(response.data)
             setError('')
         } catch (err: any) {
             setError(err.response?.data?.detail || '데이터를 불러오는데 실패했습니다')
         } finally {
             setLoading(false)
-            setRefreshing(false)
-        }
-    }
-
-    const handleCollectAll = async () => {
-        if (!confirm('모든 출처에서 지금 즉시 수집을 시작하시겠습니까?')) return
-        setRefreshing(true)
-        try {
-            await sourcesApi.collectAll()
-            alert('전체 수집 작업이 시작되었습니다. 2-3초 후 자동으로 새로고침됩니다.')
-            setTimeout(() => fetchItems(false), 3000)
-        } catch (err: any) {
-            alert('수집 시작 실패: ' + (err.response?.data?.detail || '알 수 없는 오류'))
-        } finally {
             setRefreshing(false)
         }
     }
@@ -299,30 +265,9 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
                             </button>
-                            <button
-                                onClick={handleCollectAll}
-                                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded shadow-sm transition-colors flex items-center gap-1"
-                            >
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                                지금 수집 시작
-                            </button>
-                            {refreshing ? (
+                            {refreshing && (
                                 <span className="text-sm text-blue-500 animate-pulse">업데이트 중...</span>
-                            ) : isMounted ? (
-                                <div className="flex flex-col">
-                                    <span className="text-xs text-gray-400">
-                                        {new Date().toLocaleTimeString()} 기준
-                                    </span>
-                                    <div className="bg-yellow-100 dark:bg-yellow-900/30 text-[10px] px-2 py-1 rounded mt-1 border border-yellow-200 dark:border-yellow-800 font-mono">
-                                        <div>DEBUG: Count={items.length} | TopItem=#{items[0]?.id || 'N/A'}</div>
-                                        <div className="text-[9px] mt-1 text-blue-600 dark:text-blue-400">
-                                            Top 5: {items.slice(0, 5).map(i => `#${i.id}:${i.title.substring(0, 10)}`).join(' | ')}
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : null}
+                            )}
                         </div>
                         <div className="flex space-x-2 w-full sm:w-auto">
                             <button
