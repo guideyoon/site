@@ -75,6 +75,10 @@ def dedup_classify_summarize(self, item_id: int):
         dup_count = process_deduplication(db, item)
         logger.info(f"Found {dup_count} duplicates for item {item_id}")
         
+        if dup_count > 0:
+            item.status = 'duplicate'
+            logger.info(f"Marked item {item_id} as duplicate")
+        
         # Classification
         category, region, tags = classify_item(item.title, item.raw_text or "")
         item.category = category

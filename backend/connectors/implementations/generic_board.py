@@ -53,6 +53,11 @@ class GenericBoardConnector(ConnectorBase):
                         continue
                     
                     title = title_elem.get_text(strip=True)
+                    
+                    # CLEAN TITLE: Remove [123] or [Number] prefix common in Korean boards
+                    # specific for Onsan Cultural Center and others
+                    title = re.sub(r'^\[\d+\]\s*', '', title)
+                    
                     href = title_elem.get('href', '')
                     
                     if not title or not href:
