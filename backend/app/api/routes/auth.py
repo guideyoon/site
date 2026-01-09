@@ -209,7 +209,7 @@ class GoogleLoginRequest(BaseModel):
     id_token: str
 
 
-GOOGLE_CLIENT_ID = "06789408187-em1h5bi0409g3aov5lfrc7lhktodto3s.apps.googleusercontent.com"
+GOOGLE_CLIENT_ID = "406789408187-em1h5bi0409g3aov5lfrc7lhktodto3s.apps.googleusercontent.com"
 
 
 @router.post("/google", response_model=Token)
