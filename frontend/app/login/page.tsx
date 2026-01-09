@@ -14,8 +14,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
-    const [debugInfo, setDebugInfo] = useState<string>('')
-
     // Handle Google Login Callback from Redirect
     useEffect(() => {
         const handleCallback = async () => {
@@ -31,7 +29,6 @@ export default function LoginPage() {
             if (token) {
                 setLoading(true)
                 setError('')
-                setDebugInfo(`Token detected. Sending to backend...`)
                 try {
                     const res = await authApi.googleLogin(token)
                     localStorage.setItem('token', res.data.access_token)
@@ -43,7 +40,6 @@ export default function LoginPage() {
                     const detail = err.response?.data?.detail || err.message
                     const msg = `Backend Error (${status}): ${JSON.stringify(detail)}`
                     setError(msg)
-                    setDebugInfo(msg)
                     alert(`구글 로그인 연동 실패\n\n${msg}`)
                 } finally {
                     setLoading(false)
@@ -99,19 +95,6 @@ export default function LoginPage() {
         window.location.href = `${rootUrl}?${new URLSearchParams(options).toString()}`
     }
 
-    const testBackend = async () => {
-        setDebugInfo('Testing connectivity to /api/health...')
-        try {
-            const res = await fetch('/api/health')
-            const data = await res.json()
-            setDebugInfo(`Backend OK: ${JSON.stringify(data)}`)
-            alert('백엔드 연결 성공!')
-        } catch (err: any) {
-            setDebugInfo(`Backend Connection Failed: ${err.message}`)
-            alert('백엔드 연결 실패: ' + err.message)
-        }
-    }
-
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-slate-950 px-4">
             <div className="w-full max-w-md">
@@ -158,9 +141,6 @@ export default function LoginPage() {
                     </button>
 
                     <div className="mt-8 pt-6 border-t border-gray-100 dark:border-slate-800 flex flex-col items-center gap-4">
-                        <button onClick={testBackend} className="text-[10px] text-gray-400 hover:text-blue-500 underline">서버 연결 상태 점검</button>
-
-                        {debugInfo && <div className="p-2 bg-gray-50 dark:bg-slate-800 rounded text-[9px] font-mono text-gray-400 w-full overflow-hidden text-ellipsis">DEBUG: {debugInfo}</div>}
                         <div className="flex gap-4 text-sm text-blue-500">
                             <Link href="/register">회원가입</Link>
                             <Link href="/">홈으로</Link>
