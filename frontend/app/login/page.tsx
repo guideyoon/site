@@ -15,12 +15,6 @@ export default function LoginPage() {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [debugInfo, setDebugInfo] = useState<string>('')
-    const [debugRedirectUri, setDebugRedirectUri] = useState('')
-
-    // Set Debug Redirect URI on Mount (Client-side only)
-    useEffect(() => {
-        setDebugRedirectUri(window.location.origin + '/login')
-    }, [])
 
     // Handle Google Login Callback from Redirect
     useEffect(() => {
@@ -165,14 +159,6 @@ export default function LoginPage() {
 
                     <div className="mt-8 pt-6 border-t border-gray-100 dark:border-slate-800 flex flex-col items-center gap-4">
                         <button onClick={testBackend} className="text-[10px] text-gray-400 hover:text-blue-500 underline">서버 연결 상태 점검</button>
-
-                        {/* Debug Info for Redirect URI Mismatch */}
-                        <div className="w-full text-center">
-                            <p className="text-[10px] text-gray-400 mb-1">Google Console 등록 필요 주소:</p>
-                            <code className="block p-2 bg-gray-50 dark:bg-slate-800 rounded text-[9px] font-mono text-blue-500 break-all select-all cursor-text">
-                                {debugRedirectUri}
-                            </code>
-                        </div>
 
                         {debugInfo && <div className="p-2 bg-gray-50 dark:bg-slate-800 rounded text-[9px] font-mono text-gray-400 w-full overflow-hidden text-ellipsis">DEBUG: {debugInfo}</div>}
                         <div className="flex gap-4 text-sm text-blue-500">
