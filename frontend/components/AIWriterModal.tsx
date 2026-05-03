@@ -31,7 +31,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
 
     // AI Settings
     const [provider, setProvider] = useState('openai')
-    const [style, setStyle] = useState('review') // Default style
+    const [style, setStyle] = useState('event') // Default style
     const [customPrompt, setCustomPrompt] = useState('') // For 'custom' style
 
     const [apiKeys, setApiKeys] = useState({
@@ -71,6 +71,8 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
 
     useEffect(() => {
         if (isOpen) {
+            setStyle(mode === 'blog' ? 'event' : 'review')
+
             // Prevent background scrolling
             document.body.style.overflow = 'hidden'
 
@@ -188,6 +190,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                     case 'guide': instruction = "Rewrite this as a How-to Guide."; break;
                     case 'story': instruction = "Rewrite this as a Story."; break;
                     case 'interview': instruction = "Rewrite this as an Interview."; break;
+                    case 'event': instruction = "Rewrite this as a Korean local event announcement post for a Naver Blog. Match the feel of a moms-community or neighborhood info share: a short headline on the first line, plenty of blank lines, and 3 to 5 short emoji-led lines using symbols like '✨️' or '❤️'. Include date, time, place, and attendee notes in very scannable Korean. Keep each line concise, warm, lively, and practical. Prefer simple sentence fragments over long paragraphs. Avoid formal news tone, avoid markdown bullets, and do not add sections like introduction or conclusion unless the source clearly needs them."; break;
                     case 'custom': instruction = customPrompt || instruction; break;
                 }
             }
@@ -402,7 +405,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                     <span className="text-sm font-semibold whitespace-nowrap mr-2 text-gray-700 dark:text-gray-300">스타일:</span>
                                     {mode === 'blog' ? (
                                         // Blog Styles
-                                        ['news', 'review', 'guide', 'story', 'interview', 'custom'].map((s) => (
+                                        ['news', 'review', 'guide', 'story', 'interview', 'event', 'custom'].map((s) => (
                                             <button
                                                 key={s}
                                                 onClick={() => setStyle(s)}
@@ -416,6 +419,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                                 {s === 'guide' && '가이드'}
                                                 {s === 'story' && '스토리'}
                                                 {s === 'interview' && '인터뷰'}
+                                                {s === 'event' && '행사 안내'}
                                                 {s === 'custom' && '직접 입력'}
                                             </button>
                                         ))

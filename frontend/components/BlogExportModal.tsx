@@ -20,7 +20,7 @@ export default function BlogExportModal({ isOpen, onClose, item }: BlogExportMod
 
     // AI Settings
     const [provider, setProvider] = useState('openai')
-    const [style, setStyle] = useState('review') // Default style
+    const [style, setStyle] = useState('event') // Default style
     const [customPrompt, setCustomPrompt] = useState('') // For 'custom' style
 
     // apiKey manual entry removed by user request
@@ -136,6 +136,7 @@ export default function BlogExportModal({ isOpen, onClose, item }: BlogExportMod
                 case 'guide': instruction = "Rewrite this as a How-to Guide (가이드). Use step-by-step numbering, clear headings, and instructive tone."; break;
                 case 'story': instruction = "Rewrite this as a Story (스토리텔링). Use emotional, narrative driver tone, anecdotes, and first-person perspective."; break;
                 case 'interview': instruction = "Rewrite this as an Interview (인터뷰). Format it as Q&A, with dialogue style and engaging conversational tone."; break;
+                case 'event': instruction = "Rewrite this as a Korean local event announcement post for a Naver Blog. Match the feel of a moms-community or neighborhood info share: a short headline on the first line, plenty of blank lines, and 3 to 5 short emoji-led lines using symbols like '✨️' or '❤️'. Include date, time, place, and attendee notes in very scannable Korean. Keep each line concise, warm, lively, and practical. Prefer simple sentence fragments over long paragraphs. Avoid formal news tone, avoid markdown bullets, and do not add sections like introduction or conclusion unless the source clearly needs them."; break;
                 case 'custom':
                     if (!customPrompt.trim()) {
                         alert('리라이팅 지침을 입력해주세요.')
@@ -223,6 +224,7 @@ export default function BlogExportModal({ isOpen, onClose, item }: BlogExportMod
                                     { id: 'guide', name: '가이드' },
                                     { id: 'story', name: '스토리' },
                                     { id: 'interview', name: '인터뷰' },
+                                    { id: 'event', name: '행사 안내' },
                                     { id: 'custom', name: '직접 입력' }
                                 ].map((s) => (
                                     <button
