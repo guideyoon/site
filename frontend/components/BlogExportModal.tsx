@@ -35,6 +35,31 @@ export default function BlogExportModal({ isOpen, onClose, item }: BlogExportMod
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const rewrittenTextareaRef = useRef<HTMLTextAreaElement>(null)
 
+    const buildEventImagePrompt = (sourceTitle: string, sourceText: string) => {
+        const cleanedText = sourceText
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+            .replace(/<img[^>]*>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+
+        const summary = cleanedText.slice(0, 280)
+
+        return [
+            '지역 가족 단위 방문객과 커뮤니티 이용자를 위한 한국어 행사 안내 이미지를 만들어줘.',
+            '형식은 블로그와 SNS에 올리기 좋은 세로형 포스터 스타일로, 밝고 친근하며 한눈에 읽기 쉽게 구성해줘.',
+            `메인 제목: ${sourceTitle || '행사 안내'}`,
+            '제목, 날짜, 시간, 장소, 참여 안내가 잘 보이도록 정보 우선순위를 분명하게 배치해줘.',
+            '전체 분위기는 따뜻하고 생동감 있으며, 부모와 지역 주민이 신뢰하고 보기 편한 홍보물 느낌으로 만들어줘.',
+            '색감은 부드럽지만 또렷하게 쓰고, 아이콘이나 포인트 장식을 적절히 넣되 너무 복잡하지 않게 해줘.',
+            '이미지 안의 문구는 한국어 중심으로 넣고, 장식보다 가독성을 우선해줘.',
+            `반영할 행사 정보: ${summary || sourceTitle || '행사 정보 요약'}`,
+            '세부 일정, 부스 안내, 참여 유의사항 같은 핵심 안내 문구가 자연스럽게 들어갈 공간도 고려해줘.',
+            '결과물은 문서 캡처처럼 보이지 않게 하고, 실제 홍보용 안내 이미지처럼 완성도 있게 디자인해줘.'
+        ].join('\n')
+    }
+
+    const eventImagePrompt = buildEventImagePrompt(item.title, content)
+
     useEffect(() => {
         if (isOpen) {
             // Initial content population
@@ -256,7 +281,7 @@ export default function BlogExportModal({ isOpen, onClose, item }: BlogExportMod
                         {/* Scrollable Editor Area */}
                         <div className="flex-1 flex flex-col p-4 overflow-hidden relative">
                             {/* Split Editor View */}
-                            <div className="flex-1 flex gap-4 overflow-hidden">
+                            <div className="flex-1 flex gap-4 overflow-hidden min-h-0">
                                 {/* Original Column */}
                                 <div className="flex-1 flex flex-col">
                                     <label className="text-sm font-medium mb-1 text-gray-700">원본 (Source)</label>
@@ -287,6 +312,30 @@ export default function BlogExportModal({ isOpen, onClose, item }: BlogExportMod
                                         placeholder="AI가 다시 쓴 글이 여기에 표시됩니다..."
                                     />
                                 </div>
+                            </div>
+
+                            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
+                                <div className="mb-2 flex items-center justify-between gap-3">
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-amber-900">행사 안내 이미지 프롬프트</h3>
+                                        <p className="text-xs text-amber-800">AI 리라이팅 결과와 별도로 행사 홍보 이미지를 만들 때 사용할 프롬프트입니다.</p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(eventImagePrompt)
+                                            alert('행사 안내 이미지 프롬프트가 복사되었습니다!')
+                                        }}
+                                    >
+                                        프롬프트 복사
+                                    </button>
+                                </div>
+                                <textarea
+                                    readOnly
+                                    value={eventImagePrompt}
+                                    className="h-40 w-full resize-none rounded-lg border border-amber-200 bg-white p-3 text-sm leading-relaxed text-gray-700 focus:outline-none"
+                                />
                             </div>
                         </div>
                     </div>

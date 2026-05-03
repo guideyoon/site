@@ -46,6 +46,31 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const rewrittenTextareaRef = useRef<HTMLTextAreaElement>(null)
 
+    const buildEventImagePrompt = (sourceTitle: string, sourceText: string) => {
+        const cleanedText = sourceText
+            .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+            .replace(/<img[^>]*>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+
+        const summary = cleanedText.slice(0, 280)
+
+        return [
+            '지역 가족 단위 방문객과 커뮤니티 이용자를 위한 한국어 행사 안내 이미지를 만들어줘.',
+            '형식은 블로그와 SNS에 올리기 좋은 세로형 포스터 스타일로, 밝고 친근하며 한눈에 읽기 쉽게 구성해줘.',
+            `메인 제목: ${sourceTitle || '행사 안내'}`,
+            '제목, 날짜, 시간, 장소, 참여 안내가 잘 보이도록 정보 우선순위를 분명하게 배치해줘.',
+            '전체 분위기는 따뜻하고 생동감 있으며, 부모와 지역 주민이 신뢰하고 보기 편한 홍보물 느낌으로 만들어줘.',
+            '색감은 부드럽지만 또렷하게 쓰고, 아이콘이나 포인트 장식을 적절히 넣되 너무 복잡하지 않게 해줘.',
+            '이미지 안의 문구는 한국어 중심으로 넣고, 장식보다 가독성을 우선해줘.',
+            `반영할 행사 정보: ${summary || sourceTitle || '행사 정보 요약'}`,
+            '세부 일정, 부스 안내, 참여 유의사항 같은 핵심 안내 문구가 자연스럽게 들어갈 공간도 고려해줘.',
+            '결과물은 문서 캡처처럼 보이지 않게 하고, 실제 홍보용 안내 이미지처럼 완성도 있게 디자인해줘.'
+        ].join('\n')
+    }
+
+    const eventImagePrompt = buildEventImagePrompt(item.title, content)
+
     const getProxyUrl = (url: string) => {
         if (!url) return '';
         if (url.includes('cdninstagram.com')) {
@@ -459,7 +484,7 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
 
                         {/* Editors */}
                         <div className="flex-1 flex flex-col p-3 sm:p-4 overflow-hidden md:overflow-hidden relative bg-white dark:bg-slate-950 transition-colors">
-                            <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 overflow-y-auto md:overflow-hidden pr-1">
+                            <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 overflow-y-auto md:overflow-hidden pr-1 min-h-0">
                                 <div className="flex-none md:flex-1 flex flex-col group/original min-h-[300px] md:min-h-0">
                                     <div className="flex justify-between items-center mb-1.5 px-1">
                                         <label className="text-sm font-bold text-gray-700 dark:text-gray-400 uppercase tracking-tight flex items-center gap-1.5">
@@ -573,6 +598,32 @@ export default function AIWriterModal({ isOpen, onClose, mode, item }: AIWriterM
                                     )}
                                 </div>
                             </div>
+
+                            {mode === 'blog' && (
+                                <div className="mt-4 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-4 shadow-sm dark:border-amber-900/40 dark:from-amber-950/30 dark:to-orange-950/20">
+                                    <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                        <div>
+                                            <h3 className="text-sm font-bold text-amber-900 dark:text-amber-200">행사 안내 이미지 프롬프트</h3>
+                                            <p className="mt-1 text-xs leading-relaxed text-amber-800 dark:text-amber-300/90">AI 리라이팅 결과와 별도로, 행사 홍보용 이미지 생성 모델에 바로 넣을 수 있는 프롬프트입니다.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(eventImagePrompt)
+                                                alert('행사 안내 이미지 프롬프트가 복사되었습니다!')
+                                            }}
+                                            className="shrink-0 rounded-xl bg-amber-500 px-3.5 py-2 text-xs font-bold text-white shadow-lg shadow-amber-500/20 transition-all hover:bg-amber-600 active:scale-95"
+                                        >
+                                            프롬프트 복사
+                                        </button>
+                                    </div>
+                                    <textarea
+                                        readOnly
+                                        value={eventImagePrompt}
+                                        className="h-44 w-full resize-none rounded-xl border border-amber-200 bg-white/90 p-4 text-sm leading-relaxed text-gray-700 shadow-inner focus:outline-none dark:border-amber-900/40 dark:bg-slate-900/80 dark:text-gray-200"
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 
