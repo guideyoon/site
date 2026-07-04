@@ -241,6 +241,9 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
         if (source_type === 'naver_blog' || url.includes('pstatic.net') || url.includes('naver.com')) {
             return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://m.blog.naver.com/`;
         }
+        if (source_type === 'instagram') {
+            return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://www.instagram.com/`;
+        }
         if (source_type === 'threads' || url.includes('cdninstagram.com')) {
             return `/api/items/download-proxy?url=${encodeURIComponent(url)}&referer=https://www.threads.net/`;
         }
@@ -310,6 +313,7 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                     <option value="generic_board">사이트</option>
                                     <option value="naver_blog">블로그</option>
                                     <option value="threads">Threads</option>
+                                    <option value="instagram">Instagram</option>
                                 </select>
                             </div>
 
@@ -411,12 +415,15 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                                 <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-slate-700/50 mt-1">
                                                     <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${item.source_type === 'naver_blog'
                                                         ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                                                        : item.source_type === 'threads'
-                                                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
-                                                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                                            : item.source_type === 'threads'
+                                                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
+                                                                : item.source_type === 'instagram'
+                                                                    ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400'
+                                                                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                                                         }`}>
                                                         {item.source_type === 'naver_blog' ? '블로그' :
-                                                            item.source_type === 'threads' ? 'Threads' : '사이트'}
+                                                            item.source_type === 'threads' ? 'Threads' :
+                                                                item.source_type === 'instagram' ? 'Instagram' : '사이트'}
                                                     </span>
                                                     <div className="flex gap-4">
                                                         <Link
@@ -523,12 +530,15 @@ ${selectedItem.image_urls && selectedItem.image_urls.length > 0 ? '이미지:\n'
                                                     <td className="px-6 py-4 whitespace-nowrap hidden xl:table-cell">
                                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.source_type === 'naver_blog'
                                                             ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                                                            : item.source_type === 'threads'
-                                                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
-                                                                : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                                                                : item.source_type === 'threads'
+                                                                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300'
+                                                                    : item.source_type === 'instagram'
+                                                                        ? 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-300'
+                                                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
                                                             }`}>
                                                             {item.source_type === 'naver_blog' ? '블로그' :
-                                                                item.source_type === 'threads' ? 'Threads' : '사이트'}
+                                                                item.source_type === 'threads' ? 'Threads' :
+                                                                    item.source_type === 'instagram' ? 'Instagram' : '사이트'}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">

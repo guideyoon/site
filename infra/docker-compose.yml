@@ -68,6 +68,9 @@ services:
       - COLLECT_INTERVAL_MINUTES=60
       - SUMMARY_MODE=rule
       - PYTHONPATH=/app
+      - INSTAGRAM_COOKIE_STRING=${INSTAGRAM_COOKIE_STRING:-}
+      - INSTAGRAM_SESSION_ID=${INSTAGRAM_SESSION_ID:-}
+      - INSTAGRAM_USER_AGENT=${INSTAGRAM_USER_AGENT:-}
     restart: always
     depends_on:
       postgres:

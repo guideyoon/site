@@ -254,6 +254,7 @@ export default function SourcesPage() {
                                         <option value="generic_board">사이트 (기관/뉴스)</option>
                                         <option value="naver_blog">네이버 블로그</option>
                                         <option value="threads">Threads</option>
+                                        <option value="instagram">Instagram</option>
                                     </select>
                                 </div>
 
@@ -328,6 +329,7 @@ export default function SourcesPage() {
                                                 <option value="generic_board">사이트 (기관/뉴스)</option>
                                                 <option value="naver_blog">네이버 블로그</option>
                                                 <option value="threads">Threads</option>
+                                                <option value="instagram">Instagram</option>
                                             </select>
                                         </div>
                                         <div>
